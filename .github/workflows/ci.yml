@@ -1,0 +1,73 @@
+name: CI
+
+# Trois jobs parallèles, chacun borné à 5 minutes (règle CI-BUDGET-5MIN) :
+#   ci      — types, tests (unitaires + propriétés fast-check), garde-fou de structure
+#   a11y    — rapport + site construits puis axe (0 violation exigée)
+#   budget  — garde-fou declaratif des timeouts (le check `ci-budget`)
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Dépendances (lockfile figé)
+        run: pnpm install --frozen-lockfile
+      - name: Types
+        run: pnpm -r typecheck
+      - name: Tests (unitaires + propriétés)
+        run: pnpm test:run
+        env:
+          REJEU_SEED: 20261104
+      - name: Garde-fou de structure (fichiers < 500, fonctions < 50 lignes)
+        run: pnpm guards
+      - name: Hook checkpoint-guard (preuve exécutable)
+        run: .kiro/hooks/checkpoint-guard.test.sh
+
+  a11y:
+    name: a11y
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Site (démonstration + rapports imprimables)
+        run: pnpm build
+      - name: axe — 0 violation exigée
+        run: node scripts/a11y.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: site
+          path: apps/web/dist
+          retention-days: 3

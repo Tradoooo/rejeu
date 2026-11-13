@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rejeu — rejouer les versions d'un agent, pas ses logs</title>
+<meta name="description" content="Rejeu rejoue les versions successives d'un dépôt traversées par un agent de code et désigne l'itération fautive, par exécution réelle du prédicat en bac à sable.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Rejeu</h1>
+    <p><strong>Rejouer les versions d'un agent, pas ses logs.</strong></p>
+    <p>Kiroween 2026 · Frankenstein · le magnétoscope revient, la bobine est l'historique de versions d'un agent.</p>
+  </header>
+
+  <main>
+    <section aria-labelledby="probleme">
+      <h2 id="probleme">Le problème, en une phrase</h2>
+      <p>Un agent itère jusqu'à ce que la CI passe, puis l'équipe <code>squash</code> la PR « pour la rendre propre » : les états intermédiaires disparaissent, et l'itération qui a introduit le bug n'existe plus. <code>git bisect</code> ne peut rien (les commits n'existent plus) ; un traceur d'agent ne peut rien non plus (il n'exécute aucun prédicat).</p>
+      <p>Rejeu capture un <strong>checkpoint</strong> après chaque appel d'outil mutant, puis <strong>rejoue réellement</strong> un prédicat sur chaque état, dans un bac à sable, et rend l'<strong>index de la version fautive</strong>.</p>
+    </section>
+
+    <section aria-labelledby="demo">
+      <h2 id="demo">Démonstration hors ligne</h2>
+      <p class="muted">Données d'une exécution <em>réelle</em>, enregistrée par <code>scripts/make-demo-fixture.mjs</code> : sept checkpoints réels (arbres git), prédicat exécuté pour de vrai à chaque état. La page ne rejoue que le résultat — zéro réseau, zéro exécution, elle ne peut pas échouer devant un jury.</p>
+
+      <div class="actions" role="group" aria-label="États de l'interface">
+        <button type="button" data-state="vide">État vide</button>
+        <button type="button" data-state="chargement">Chargement</button>
+        <button type="button" data-state="erreur">Erreur (non déterministe)</button>
+        <button type="button" class="primary" data-state="succes">Succès (rejeu enregistré)</button>
+        <a href="report.html">Rapport imprimable A4</a>
+      </div>
+
+      <div id="zone" class="card" role="status" aria-live="polite"></div>
+      <noscript><p class="warn">La démonstration interactive demande JavaScript ; le <a href="report.html">rapport imprimable</a> est autonome.</p></noscript>
+    </section>
+
+    <section aria-labelledby="comment">
+      <h2 id="comment">Ce que la démonstration ne prétend pas</h2>
+      <ul>
+        <li>Elle ne mesure rien à l'écran : les temps affichés sont ceux de l'exécution enregistrée, horodatés.</li>
+        <li>Elle ne prouve pas la reproductibilité du modèle : un fournisseur peut changer un modèle sous une version épinglée ; Rejeu le signale au lieu de le masquer.</li>
+        <li>Elle ne remplace pas la revue de code : elle localise la version fautive, pas la qualité du correctif.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="muted">
+    <p>Rejeu · MIT · <a href="https://github.com/Tradoooo/rejeu">dépôt</a> · capture par proxy d'outils (broker MCP), rejeu en bac à sable <code>unshare -n</code>, chaîne d'attestation <code>chain.json</code> vérifiable par <code>rejeu verify</code>.</p>
+  </footer>
+</div>
+<script src="app.js" type="module"></script>
+</body>
+</html>

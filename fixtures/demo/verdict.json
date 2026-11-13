@@ -1,0 +1,37 @@
+{
+  "status": "localise",
+  "faultyIndex": 2,
+  "faultyTree": "f1850f39fb721f49f33e55aef88a708610d7ac67",
+  "predecessorIndex": 1,
+  "predicate": "node --test test/parser.test.js",
+  "mode": "lineaire",
+  "durationMs": 1119,
+  "checkpointsTotal": 7,
+  "checkpointsRun": 3,
+  "hostRepoUnchanged": true,
+  "results": [
+    {
+      "index": 0,
+      "ok": true,
+      "ms": 0
+    },
+    {
+      "index": 1,
+      "ok": true,
+      "ms": 0
+    },
+    {
+      "index": 2,
+      "ok": false,
+      "ms": 0
+    }
+  ],
+  "message": "Itération fautive #2 — premier checkpoint où le prédicat bascule.",
+  "verification": {
+    "ok": true,
+    "checked": 7,
+    "breaks": []
+  },
+  "sessionDigest": "11c6d5533948c9dda1b3b47eced2d24924eab358c6371ea57ed8be2fad8d3d8a",
+  "diff": "diff --git a/src/parser.js b/src/parser.js\nindex 50d5627..fb24673 100644\n--- a/src/parser.js\n+++ b/src/parser.js\n@@ -1,5 +1,5 @@\n export function parse(value) {\n-  return value.split(\",\").map((part) => part.trim());\n+  return value.split(\",,\").map((part) => part.trim());\n }\n \n-// itération 2\n+// itération 3"
+}

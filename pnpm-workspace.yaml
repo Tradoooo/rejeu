@@ -1,0 +1,11 @@
+packages:
+  - "packages/*"
+
+# esbuild livre son binaire dans un paquet de plateforme (@esbuild/*) : son
+# script de post-installation est une vérification sans effet. Déclaré
+# explicitement pour que `pnpm install` reste déterministe et silencieux.
+allowBuilds:
+  esbuild: true
+
+ignoredBuiltDependencies:
+  - esbuild

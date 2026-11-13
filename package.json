@@ -1,0 +1,33 @@
+{
+  "name": "rejeu",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "pnpm -r typecheck",
+    "test:run": "vitest run",
+    "test:watch": "vitest",
+    "guards": "node scripts/check-line-limits.mjs",
+    "build": "node scripts/build-site.mjs",
+    "ci:all": "pnpm typecheck && pnpm test:run && pnpm guards && pnpm build",
+    "corpus": "node corpus/generate.mjs",
+    "measure": "node corpus/measure.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.11.0",
+    "@types/node": "^24.0.0",
+    "fast-check": "^3.22.0",
+    "playwright": "1.65.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

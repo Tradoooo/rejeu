@@ -1,0 +1,31 @@
+name: ci-budget
+
+# Garde-fou déclaratif : aucun job d'un workflow déclenché par une PR ne peut
+# dépasser 5 minutes (règle user 2026-10-24). Le check `ci-budget` est exigé
+# par la file Mergify.
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-budget-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci-budget:
+    name: ci-budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Vérifier le budget de 5 min par job
+        run: python3 .github/ci-budget/check_timeouts.py

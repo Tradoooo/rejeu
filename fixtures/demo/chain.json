@@ -1,0 +1,77 @@
+{
+  "session": "a41f9c2",
+  "repo": "/tmp/rejeu-demo-SfPnUk",
+  "createdAt": "2026-11-13T13:35:33.273Z",
+  "entries": [
+    {
+      "index": 0,
+      "tree": "74580fc98f2f48a42d28408008dc5ccdcdf7d34f",
+      "parentTree": null,
+      "tool": "edit",
+      "action": "edit:src/parser.js · introduction du parseur",
+      "at": "2026-11-13T13:35:33.273Z",
+      "outside": {},
+      "digest": "74628e209473302a4582e0a5c290431267f1c71374ae8cda5af7565363214349"
+    },
+    {
+      "index": 1,
+      "tree": "8048391fee7d1a7180bd729bac6f645dbcf60377",
+      "parentTree": "74580fc98f2f48a42d28408008dc5ccdcdf7d34f",
+      "tool": "edit",
+      "action": "edit:test/parser.test.js · écriture du test",
+      "at": "2026-11-13T13:35:33.335Z",
+      "outside": {},
+      "digest": "a3c6d9b93bae6205b07d1c1106f2de37da3334eb79eb60f01b6397320ff4ff04"
+    },
+    {
+      "index": 2,
+      "tree": "f1850f39fb721f49f33e55aef88a708610d7ac67",
+      "parentTree": "8048391fee7d1a7180bd729bac6f645dbcf60377",
+      "tool": "edit",
+      "action": "edit:src/parser.js · correction du séparateur (bug introduit)",
+      "at": "2026-11-13T13:35:33.397Z",
+      "outside": {},
+      "digest": "62dc4e4e5eab0ca46015c6eb558fc4765767c1a2301c1ed25b2c03f6b3bc0d3d"
+    },
+    {
+      "index": 3,
+      "tree": "934b8435ceb222c36ab74dde745f94c3f9db0c1d",
+      "parentTree": "f1850f39fb721f49f33e55aef88a708610d7ac67",
+      "tool": "bash",
+      "action": "bash:node --test · suite rouge, l'agent itère",
+      "at": "2026-11-13T13:35:33.444Z",
+      "outside": {},
+      "digest": "59ebcf8101e654f89faaa57a29320c5a3ecdf699670d34fb9104f62521d7b4b2"
+    },
+    {
+      "index": 4,
+      "tree": "9f679780d4c81acd9536e715421545db6a10dae5",
+      "parentTree": "934b8435ceb222c36ab74dde745f94c3f9db0c1d",
+      "tool": "edit",
+      "action": "edit:src/parser.js · rétablissement du séparateur",
+      "at": "2026-11-13T13:35:33.510Z",
+      "outside": {},
+      "digest": "ec42fbf55305b5e0c5f2cd70bb5b21b56d1ed7bcee21191a40b57f095e8e3dbe"
+    },
+    {
+      "index": 5,
+      "tree": "fe676d26149affe6c676b0b3224e08d8cc74e2c0",
+      "parentTree": "9f679780d4c81acd9536e715421545db6a10dae5",
+      "tool": "bash",
+      "action": "bash:node --test · suite verte",
+      "at": "2026-11-13T13:35:33.594Z",
+      "outside": {},
+      "digest": "bbe13147c1a2b60961d1eaa2e99219138f629e1e47fff98f3b9c60fc09c5c085"
+    },
+    {
+      "index": 6,
+      "tree": "634a18636d05afd1d125a308ac589f9ecd45050c",
+      "parentTree": "fe676d26149affe6c676b0b3224e08d8cc74e2c0",
+      "tool": "commit",
+      "action": "commit:squash de la PR",
+      "at": "2026-11-13T13:35:33.662Z",
+      "outside": {},
+      "digest": "bc7d405cb574d3f7a44498769c8d4413e70c3f4f948a57522b85d3aa5ed2fa99"
+    }
+  ]
+}

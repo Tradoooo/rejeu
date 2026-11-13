@@ -1,0 +1,46 @@
+{
+  "chain": {
+    "session": "flaky",
+    "repo": "/tmp/rejeu-demo-SfPnUk",
+    "createdAt": "2026-11-13T13:35:34.862Z",
+    "entries": [
+      {
+        "index": 0,
+        "tree": "fdb65b96539781e3c94af4f638bc43feff10d1c5",
+        "parentTree": null,
+        "tool": "write",
+        "action": "write:test/flaky.test.js · test instable",
+        "at": "2026-11-13T13:35:34.862Z",
+        "outside": {},
+        "digest": "9bb2d15751033418f049cd09b3a3420c889cd948160f20a1157ff5ac104aab4f"
+      }
+    ]
+  },
+  "verdict": {
+    "status": "non-deterministe",
+    "faultyIndex": 0,
+    "faultyTree": null,
+    "predecessorIndex": null,
+    "predicate": "node --test test/flaky.test.js",
+    "mode": "lineaire",
+    "durationMs": 549,
+    "checkpointsTotal": 1,
+    "checkpointsRun": 1,
+    "hostRepoUnchanged": false,
+    "results": [
+      {
+        "index": 0,
+        "ok": false,
+        "ms": 0
+      }
+    ],
+    "message": "Le prédicat échoue au checkpoint 0 sans se reproduire : test non déterministe, verdict suspendu."
+  },
+  "verification": {
+    "ok": true,
+    "checked": 1,
+    "breaks": []
+  },
+  "sessionDigest": "feb6a1123141683216a7e4c49b3a522159163d85b1d9aae8998ffb6792e6446e",
+  "predicate": "node --test test/flaky.test.js"
+}

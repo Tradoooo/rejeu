@@ -1,0 +1,13 @@
+{
+  "measuredAt": "2026-11-13T16:21:45.090Z",
+  "captures": 7,
+  "before": {
+    "distinctTrees": 7,
+    "falseDiffs": 6
+  },
+  "after": {
+    "distinctTrees": 1,
+    "falseDiffs": 0
+  },
+  "steering": ".kiro/steering/determinism.md"
+}

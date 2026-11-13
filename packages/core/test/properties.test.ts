@@ -98,6 +98,33 @@ describe("propriétés REJ-P (fast-check)", () => {
     );
   });
 
+  // REJ-P-06 : deux captures du même état doivent produire le même arbre.
+  // C'est la propriété qui a été violée pendant la construction (le journal
+  //capturerait son propre journal) : le contre-exemple est rejoué sur le
+  // code d'avant le correctif, voir docs/preuves/propriete-contre-exemple.txt.
+  it("P-06 · deux captures du même état donnent le même arbre", async () => {
+    const { captureCheckpoint } = await import("../src/store.ts");
+    const { makeRepo, commit, write } = await import("./helpers.ts");
+    const { rmSync } = await import("node:fs");
+
+    await fc.assert(
+      fc.asyncProperty(fc.array(fc.string({ maxLength: 12 }), { minLength: 1, maxLength: 3 }), async (contents) => {
+        const repo = makeRepo();
+        try {
+          write(repo, "package.json", '{"type":"module"}');
+          write(repo, "a.txt", contents.join("|"));
+          commit(repo, "init");
+          const first = captureCheckpoint({ repo, session: "p06", tool: "edit", action: "edit" });
+          const second = captureCheckpoint({ repo, session: "p06", tool: "edit", action: "edit" });
+          return first.tree === second.tree;
+        } finally {
+          rmSync(repo, { recursive: true, force: true });
+        }
+      }),
+      { ...settings, numRuns: 20 },
+    );
+  });
+
   it("rappel : sha256 rend toujours 64 caractères", () => {
     for (let index = 0; index < 1000; index += 1) expect(sha256(`entrée-${index}`)).toHaveLength(64);
   });

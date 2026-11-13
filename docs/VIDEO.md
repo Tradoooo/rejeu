@@ -1,6 +1,6 @@
 # Vidéo — `docs/demo/rejeu-demo.mp4`
 
-- **Durée** : 66 s · **Format** : H.264 (libx264, `-crf 21`, `+faststart`), 1280×720, 25 i/s, 1,5 Mo.
+- **Durée** : 69 s · **Format** : H.264 (libx264, `-crf 21`, `+faststart`), 1280×720, 25 i/s, 1,6 Mo.
 - **Audio** : **aucun** — ni musique, ni narration, ni marque tierce. Tout le texte est à l'écran.
 - **Fabrication** : `node scripts/capture-reel.mjs` (rejoue la session réelle et produit
   `fixtures/reel.json`) → `apps/web/reel.html` (reel) → `node scripts/record-demo.mjs`

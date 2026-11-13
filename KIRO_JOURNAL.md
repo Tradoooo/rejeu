@@ -87,6 +87,8 @@ Ce qui est scripté : l'injection du défaut et sa position. Ce qui est réel :
 les arbres git, les exécutions du prédicat, les temps.
 
 ### 14:55 — axe : 0 violation, et un point non concluant
+*(Corrigé à 17:10 : les icônes sont passées en SVG, le contraste conclut ; le
+journal de 14:55 conservait l'état de l'heure — voir l'entrée de 17:10.)*
 
 `node scripts/a11y.mjs` sur les trois pages (accueil avec ses quatre états,
 rapport, rapport « non déterministe ») : **0 violation**, 36 et 29 règles
@@ -146,7 +148,8 @@ l'agent dans un dépôt temporaire (état fautif extrait comme rejeu le fait,
 test exécuté, diff réel, hook invoqué, `rejeu find` relancé) et écrit
 `fixtures/reel.json` ; `apps/web/reel.html` joue ces sorties scène par scène ;
 `scripts/record-demo.mjs` enregistre avec Playwright et convertit en MP4
-H.264 1280×720 (`docs/demo/rejeu-demo.mp4`, 59 s, 1,3 Mo, sans narration).
+H.264 1280×720 (`docs/demo/rejeu-demo.mp4` ; **69 s / 1,6 Mo après les
+réenregistrements de 16:10 et 17:05**, 59 s / 1,3 Mo à cette heure-là).
 
 Trois défauts vus **au rendu réel** (cadres extraits du MP4) et corrigés :
 
@@ -219,7 +222,8 @@ est vérifiable`). Le relecteur passe ensuite au vert.
 
 Deux autres exigences sans test ont été comblées de la même façon :
 `REJ-S-01` (broker → `packages/broker/test/broker.test.ts`) et `REJ-G-06`
-(bac à sable → `packages/core/test/sandbox.test.ts`). Total : **38 tests**.
+(bac à sable → `packages/core/test/sandbox.test.ts`). Total : **38 tests**
+(*à cette heure-là ; voir le décompte final dans l'entrée de 17:25*).
 
 ### 16:58 — la comparaison spec / vibe coding, mesurée
 
@@ -245,7 +249,8 @@ capturée devenait alors **irrejouable**.
 Correctif : chaque capture crée une ref `refs/rejeu/<session>/<index>`
 (`protectTree` dans `store.ts`), donc l'arbre reste atteignable. Vérifié pour de
 vrai : capture → `git gc --prune=now` → `git cat-file -t <arbre>` répond
-`t`et `rejeu verify` répond « chaîne vérifiée ». Test ajouté (39 tests).
+`t`et `rejeu verify` répond « chaîne vérifiée ». Test ajouté (39 tests à
+cette heure-là ; **40** au total à 17:25, propriété REJ-P-06 comprise).
 
 Le même travail a faitmoving deux affirmations de notre communication, qu'on
 corrige plutôt que de les défendre : `git bisect run` exécute bien un prédicat
@@ -253,11 +258,44 @@ et rend bien l'index du commit fautif (notre différence est l'indexation
 d'états **non commités**), et les checkpoints d'agents (Cline, Roo Code, opencode)
 sont plus proches de nous que nous ne l'affirmions et survivent au squash.
 
+## 17:25 — les chiffres du dépôt, en un seul endroit
+
+Un juge à froid (78/100) a relevé que les chiffres divergeaient d'un fichier à
+l'autre. Voici **la seule source** ; toute contradiction avec une entrée
+antérieure est une entrée datée, pas l'état actuel.
+
+| Fait | Valeur | Où c'est produit |
+|---|---|---|
+| tests automatisés | **40** | `pnpm test:run` |
+| pages publiées vérifiées | **4** (accueil, rapport, rapport « non déterministe », rapport de session réelle) | `scripts/a11y.mjs` |
+| violations axe | **0**, et **0** contrôle non concluant | `scripts/a11y.mjs` |
+| navigation clavier | 11 éléments focalisés, focus visible sur les 11 | `scripts/a11y.mjs` |
+| `prefers-reduced-motion` | transitions et animations à 0 s | `scripts/a11y.mjs` |
+| vidéo | **69 s**, H.264 1280×720, **1,6 Mo**, sans audio | `docs/demo/rejeu-demo.mp4` |
+| démo en ligne : verdict affiché | **0,38 s** | `scripts/measure-claims.mjs` |
+| première valeur sur un dépôt vierge | **0,77 s** | `scripts/measure-claims.mjs` |
+| banc de 20 sessions | **20/20** correctes, médiane **1,90 s** (min 0,76 / max 4,02), 95/162 checkpoints rejoués | `corpus/measure.mjs` |
+| session réelle d'agent | itération fautive **#0**, en **0,5 à 3,2 s** selon la charge (trois exécutions réelles du même prédicat sur le même état : on publie l'étendue) | `fixtures/session-agent/` |
+| session squashée | recherche manuelle : **0** état retrouvé ; rejeu : **#0** | `docs/MESURES.md` |
+| capture non coopérative | 3 appels d'agent → **2 checkpoints** | `fixtures/session-proxy/` |
+| incident du hook | **1** commande destructive refusée (agent réel, 13 nov. 16:52) | `fixtures/session-hook/incident.md` |
+| contre-exemple de propriété | **1** propriété fast-check qui échoue sur le code d'avant le correctif (graine 20261104) | `docs/preuves/propriete-contre-exemple.txt` |
+| effet du steering | **6 faux écarts → 0** sur 7 captures | `docs/preuves/steering.json` |
+| concurrents comparés | **20**, sourcés | `docs/CONCURRENTS.md` |
+
 ## Ce qui n'est pas encore fait
 
 - La capture sans coopération passe par un serveur MCP **enveloppé** : un agent
   qui n'utilise aucun serveur MCP n'est pas capturé.
-- **Comparaison spec / vibe coding** : non mesurée. La fiche V2 annonçait
-  « 3 h 20 / 14 allers-retours / 3 défauts contre 1 h 05 / 27 allers-retours
-  / 6 défauts » ; ces chiffres n'ont pas été produits ici et ne sont pas
-  repris.
+- La **perte subie** par les équipes n'est pas chiffrée : le protocole est
+  écrit (`docs/PERTES.md`), il n'est pas exécuté (il faut des chronométrages
+  humains).
+- La comparaison spec / vibe coding porte sur **une fonction, un modèle, une
+  fois** ; durée et itérations sont déclaratives.
+- La vidéo montre les **sorties réelles rejouées** par l'outil, pas l'agent
+  lui-même à l'écran.
+- `chain.json` reste dans `.replay/` (ignoré par git) : `rejeu export` le copie
+  vers `replay/<session>/` pour le versionner, mais ce n'est pas fait par défaut.
+- La fiche V2 annonçait « 3 h 20 / 14 allers-retours / 3 défauts contre 1 h 05
+  / 27 allers-retours / 6 défauts » : ces chiffres-là **ne sont pas repris**,
+  la mesure produite est différente et documentée.

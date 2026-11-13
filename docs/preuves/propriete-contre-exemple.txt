@@ -1,0 +1,37 @@
+# Contre-exemple réel trouvé par une propriété
+
+Propriété : REJ-P-06 — « deux captures du même état donnent le même arbre ».
+Graine : 20261104 (REJEU_SEED, épinglée en CI).
+Fichier : packages/core/test/properties.test.ts (fast-check, 20 exécutions).
+
+## 1) Sur le code d'AVANT le correctif — la propriété ÉCHOUE
+
+Le code d'avant est reconstruit en retirant l'exclusion `.replay/` de ALWAYS_IGNORED
+(store.ts) : la capture réintègre alors son propre journal dans l'arbre.
+
+```
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/core/test/properties.test.ts > propriétés REJ-P (fast-check) > P-06 · deux captures du même état donnent le même arbre
+Error: Property failed after 1 tests
+{ seed: 20261104, path: "0:0:0", endOnFailure: true }
+Counterexample: [[""]]
+Shrunk 2 time(s)
+```
+
+## 2) Sur le code actuel — la propriété PASSE
+
+```
+npm notice run 'vitest' run packages/core/test/properties.test.ts -t P-06
+
+ RUN  v3.2.7 /home/baptiste/Bureau/rejeu
+
+ ✓ packages/core/test/properties.test.ts (7 tests | 6 skipped) 1424ms
+   ✓ propriétés REJ-P (fast-check) > P-06 · deux captures du même état donnent le même arbre  1422ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 6 skipped (7)
+   Start at  17:21:11
+   Duration  1.96s (transform 90ms, setup 0ms, collect 169ms, tests 1.42s, environment 0ms, prepare 109ms)
+
+```

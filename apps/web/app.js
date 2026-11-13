@@ -132,5 +132,5 @@ load()
   .then(() => select("vide"))
   .catch(() => {
     zone.className = "card bad";
-    zone.innerHTML = `<h3>${ICONS.bad} Données de démonstration absentes</h3><p>La page a été ouverte hors du site publié : les fichiers <code>data/*.json</code> ne sont pas accessibles en <code>file://</code>. Le <a href="report.html">rapport imprimable</a> reste lisible.</p>';
+    zone.innerHTML = `<h3>${ICONS.bad} Données de démonstration absentes</h3><p>La page a été ouverte hors du site publié : les fichiers <code>data/*.json</code> ne sont pas accessibles en <code>file://</code>. Le <a href="report.html">rapport imprimable</a> reste lisible.</p>`;
   });

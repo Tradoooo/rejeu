@@ -44,11 +44,23 @@ for (const page of PAGES) {
   const context = await browser.newContext();
   const tab = await context.newPage();
   await tab.goto(`http://127.0.0.1:${port}${page}`, { waitUntil: "load" });
+  // Garde-fou : une page qui ne rend rien ne doit pas pouvoir « passer » la
+  // vérification d'accessibilité. On exige du contenu avant de mesurer.
+  if (page === "/") {
+    // Garde-fou : une page qui ne rend rien ne doit pas pouvoir « passer » la
+    // vérification d'accessibilité. On exige du contenu avant de mesurer.
+    await tab.waitForSelector("#zone h3", { timeout: 10_000 }).catch(() => undefined);
+    const content = await tab.evaluate(() => (document.querySelector("#zone")?.textContent ?? "").trim());
+    if (content.length < 40) {
+      process.stdout.write("✕ la démonstration ne rend pas de contenu : mesure refusée\n");
+      failures += 1;
+    }
+  }
   // Démonstration : on parcourt les quatre états avant de mesurer.
   if (page === "/") {
-    for (const state of ["chargement", "erreur", "succes", "vide"]) {
+    for (const state of ["succes", "chargement", "erreur", "vide"]) {
       await tab.click(`button[data-state="${state}"]`);
-      await tab.waitForTimeout(150);
+      await tab.waitForTimeout(200);
     }
   }
   const result = await new AxeBuilder({ page: tab }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"]).analyze();

@@ -1,0 +1,14 @@
+{
+  "measuredAt": "2026-11-13T16:19:56.582Z",
+  "demo": {
+    "seconds": 0.38,
+    "verdictVisible": true,
+    "claim": "< 30 s, sans compte ni installation"
+  },
+  "adoption": {
+    "seconds": 0.77,
+    "claim": "première valeur en < 60 s"
+  },
+  "demoUnder30": true,
+  "valueUnder60": true
+}

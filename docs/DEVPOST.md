@@ -30,7 +30,7 @@ Un agent itère, corrige son propre test rouge, puis l'équipe `squash` la PR «
 
 La propriété « deux captures du même état donnent le même arbre » a **échoué** : la capture écrivait `.replay/chain.json` dans l'arbre qu'elle capturait, donc chaque capture produisait un arbre différent. Détectée par `store.test.ts`, corrigée par `ALWAYS_IGNORED` (`.replay/`, `.git/`, `node_modules/`). Deuxième chemin du même défaut : un script écrivant `Date.now()` dans un fichier suivi — verrouillé par `version-property.test.ts`. Journal complet : `KIRO_JOURNAL.md`.
 
-## Les huit questions Kiro, y compris deux « non fait »
+## Les huit questions Kiro
 
 | Question Kiro | Réponse |
 |---|---|
@@ -42,6 +42,7 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 | Un usage mesurable de MCP ? | Oui — deux brokers MCP (coopératif et non coopératif) et deux sessions d'agent réelles, avec les temps. |
 | Le steering a-t-il eu un effet avant/après ? | Oui — `determinism.md` (règle d'exclusion) est né d'un défaut mesuré ; l'effet est vérifiable par deux tests. |
 | Le chiffre est-il produit par l'outil ? | Oui — l'index de la version fautive sort d'une exécution réelle ; les temps viennent du banc rejouable. |
+| La perte subie est-elle chiffrée ? | **Pas encore.** Le protocole est écrit (`docs/PERTES.md`), il n'est pas exécuté : il faut des chronométrages humains. Le dépôt publie donc le coût de l'outil, pas une perte inventée. |
 
 ## Les chiffres, et leur commande
 
@@ -55,10 +56,13 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 | navigation clavier | 11 éléments focalisés, focus visible partout | `node scripts/a11y.mjs` |
 | `prefers-reduced-motion` | transitions et animations à 0 s | `node scripts/a11y.mjs` |
 | vidéo | 69 s, H.264, sans audio, sorties réelles | `node scripts/capture-reel.mjs && node scripts/record-demo.mjs` |
-| session squashée | recherche manuelle : **0 état retrouvé** ; rejeu : **#0 en 0,6 s** | `docs/MESURES.md` |
-| session réelle d'agent | fautive #0 localisée en 3,0 s | `fixtures/session-agent/` (opencode + broker) |
+| session squashée | recherche manuelle : **0 état retrouvé** ; rejeu : **#0 en 0,5–3,2 s** | `docs/MESURES.md` |
+| démo en ligne | verdict affiché en **0,38 s** | `scripts/measure-claims.mjs` |
+| première valeur (dépôt vierge) | **0,77 s** | `scripts/measure-claims.mjs` |
+| steering avant/après | **6 faux écarts → 0** sur 7 captures | `scripts/measure-steering.mjs` |
+| session réelle d'agent | fautive #0 localisée (0,5 à 3,2 s selon la charge) | `fixtures/session-agent/` (opencode + broker) |
 | capture non coopérative | 3 appels d'agent → 2 checkpoints | `fixtures/session-proxy/` (proxy MCP) |
-| tests | 38 | `pnpm test:run` |
+| tests | 40 | `pnpm test:run` |
 
 ## Les limites, écrites
 
@@ -67,4 +71,4 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 - Linux uniquement pour la coupure réseau ; macOS/Windows hors périmètre v0.1.
 - La chaîne prouve l'intégrité du journal, pas l'honnêteté de l'agent.
 - Deux modes de capture : coopérative (l'agent appelle le checkpoint) ou **non coopérative** (un proxy MCP enveloppe les outils de l'agent et capture chaque changement d'état). Le second mode exige que l'agent passe par un serveur MCP enveloppé.
-- La vidéo est faite (59 s) ; elle montre une session réelle, pas une maquette.
+- La vidéo est faite (69 s, sans audio) ; elle montre une session réelle, pas une maquette.

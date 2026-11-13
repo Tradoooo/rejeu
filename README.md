@@ -28,7 +28,12 @@ extrait, test exécuté, hook invoqué, recherche relancée) et le reel n'affich
 que ces sorties. La vidéo est aussi publiée avec le site :
 https://tradoooo.github.io/rejeu/demo/rejeu-demo.mp4
 
-## Démonstration (hors ligne, 30 s)
+## Démonstration (hors ligne)
+
+Mesuré (`scripts/measure-claims.mjs`) : **0,38 s** pour voir le verdict dans la
+démo, **0,77 s** pour une première valeur sur un dépôt vierge (`git init` +
+`rejeu capture` + `rejeu find`). Les affirmations « moins de 30 s » et
+« moins de 60 s » du README sont donc des mesures, pas des promesses.
 
 → **https://tradoooo.github.io/rejeu/**
 
@@ -118,7 +123,7 @@ JSON-RPC sur stdio, zéro dépendance). L'agent n'est ni patché ni tracé.
 Voir [`docs/MESURES.md`](docs/MESURES.md) — produites par
 `node corpus/generate.mjs && node corpus/measure.mjs` :
 
-- session réelle d'agent : **itération fautive localisée (#0) en 3,0 s**
+- session réelle d'agent : **itération fautive localisée (#0)**, en **0,5 à 3,2 s** selon la charge (trois exécutions réelles du même prédicat sur le même état — on publie l'étendue, pas un chiffre unique)
 - **20/20** localisations correctes sur le banc de 20 sessions
 - **médiane 1,90 s** par session (min 0,76 s, max 4,02 s)
 - **95/162** checkpoints rejoués (la dichotomie est utilisée quand le prédicat est monotone)

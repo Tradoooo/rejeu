@@ -19,6 +19,7 @@ const USAGE = `rejeu — rejouer les versions d'un agent, pas ses logs
   rejeu verify   --repo . --session <id>
   rejeu find     --repo . --session <id> --predicate "<commande>" [--mode lineaire|dichotomie|auto]
   rejeu report   --repo . --session <id> --predicate "<commande>" [--out report.html]
+  rejeu export   --repo . --session <id> [--out replay/<id>]
   rejeu demo     [--out report.html]
 `;
 
@@ -111,6 +112,18 @@ async function commandReport(repo: string, session: string, values: Command["arg
   return 0;
 }
 
+/** `export` : copie la chaîne dans un chemin versionnable (donc committable). */
+function commandExport(repo: string, session: string, values: Command["args"]): number {
+  const chain = loadChain(repo, session);
+  if (!chain) return unknownSession(session);
+  const target = resolve(arg(values, "out", join(repo, "replay", session)));
+  mkdirSync(target, { recursive: true });
+  writeFileSync(join(target, "chain.json"), `${JSON.stringify(chain, null, 2)}\n`, "utf8");
+  writeFileSync(join(target, "session-digest.txt"), `${sessionDigest(chain)}\n`, "utf8");
+  process.stdout.write(`chaîne exportée vers ${target} (à committer : la preuve devient un test de non-régression)\n`);
+  return 0;
+}
+
 async function main(argv: string[]): Promise<number> {
   const parsed = parseArgs({
     args: argv,
@@ -136,6 +149,7 @@ async function main(argv: string[]): Promise<number> {
   if (command === "capture") return commandCapture(repo, parsed.values);
   if (command === "ls") return commandList(repo);
   if (command === "verify") return commandVerify(repo, arg(parsed.values, "session"));
+  if (command === "export") return commandExport(repo, arg(parsed.values, "session"), parsed.values);
   if (command === "find") return commandFind(repo, arg(parsed.values, "session"), parsed.values);
   if (command === "report") return commandReport(repo, arg(parsed.values, "session"), parsed.values);
 

@@ -106,6 +106,31 @@ function checkHook(name: string, args: Record<string, unknown>): string | null {
   return null;
 }
 
+/** Traite un `tools/call` : vérification par le hook, forwarding, capture. */
+async function handleToolCall(id: unknown, message: Record<string, unknown>, params: Record<string, unknown>): Promise<void> {
+  const name = String((params.name as string) ?? "");
+  const args = (params.arguments as Record<string, unknown> | undefined) ?? {};
+  if (name === "rejeu_verify_chain") {
+    const result = verifyChain({ session: SESSION, repo: REPO, createdAt: "", entries: [] });
+    write(id, { result: { content: [{ type: "text", text: JSON.stringify(result) }], isError: !result.ok } });
+    return;
+  }
+  const refusal = checkHook(name, args);
+  if (refusal) {
+    process.stderr.write(`rejeu-proxy : appel refusé par le hook — ${refusal.split("\n")[0]}\n`);
+    write(id, { result: { content: [{ type: "text", text: refusal }], isError: true } });
+    return;
+  }
+  const response = await forward(message);
+  capture(name, args);
+  write(id, response as object);
+}
+
+/** Écrit une réponse JSON-RPC sur stdout. */
+function write(id: unknown, payload: object): void {
+  process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", id, ...payload })}\n`);
+}
+
 async function handle(message: Record<string, unknown>): Promise<void> {
   const id = message.id;
   const method = String(message.method ?? "");
@@ -133,26 +158,7 @@ async function handle(message: Record<string, unknown>): Promise<void> {
     return;
   }
   if (method === "tools/call") {
-    const name = String((params.name as string) ?? "");
-    if (name === "rejeu_verify_chain") {
-      const result = verifyChain({ session: SESSION, repo: REPO, createdAt: "", entries: [] });
-      process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", id, result: { content: [{ type: "text", text: JSON.stringify(result) }], isError: !result.ok } })}\n`);
-      return;
-    }
-    const args = (params.arguments as Record<string, unknown> | undefined) ?? {};
-    const refusal = checkHook(name, args);
-    if (refusal) {
-      process.stderr.write(`rejeu-proxy : appel refusé par le hook — ${refusal.split("\n")[0]}\n`);
-      process.stdout.write(`${JSON.stringify({
-        jsonrpc: "2.0",
-        id,
-        result: { content: [{ type: "text", text: refusal }], isError: true },
-      })}\n`);
-      return;
-    }
-    const response = await forward(message);
-    capture(name, args);
-    process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", id, ...(response as object) })}\n`);
+    await handleToolCall(id, message, params);
     return;
   }
   const response = await forward(message);

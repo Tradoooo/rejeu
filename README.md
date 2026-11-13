@@ -144,6 +144,32 @@ d'agent réelle et la vidéo ne sont **pas** faites — c'est écrit dans
 L'information n'est jamais portée par la seule couleur : chaque état porte une
 icône **et** un texte (« passe », « échec »).
 
+## Les agents de relecture
+
+- **relecteur** — auditeur **en lecture seule** : il vérifie que la chaîne
+  s'atteste et que chaque exigence EARS a un vérificateur nommé.
+  `node tools/relecteur.mjs --repo . --session <id>` ; définition : `.kiro/agents/relecteur.md`.
+- **testeur** — exécute la suite dans un bac à sable, réseau coupé quand le
+  noyau l'autorise (et le dit quand il refuse), sans écrire dans le dépôt.
+  `node tools/testeur.mjs` ; définition : `.kiro/agents/testeur.md`.
+
+Le relecteur a déjà servi : il a trouvé une exigence sans vérificateur nommé
+(`REJ-P-05`), qui a été corrigée et couverte par un test.
+
+## Spec contre « vibe coding », mesuré
+
+`experiments/spec-vibe/` : deux sous-agents du même modèle implémentent la même
+fonction (`isIgnored`), l'un avec la spécification EARS, l'autre avec une seule
+phrase. La **même** suite de 14 cas est ensuite exécutée contre les deux.
+
+| Lot | Tests en échec | Tests écrits par l'agent | Lignes | Échecs à la 1ʳᵉ exécution (déclaré) |
+|---|---|---|---|---|
+| spec | **0** | 22 | 75 | 0 |
+| vibe | **0** | 9 | 128 | 1 |
+
+Les deux finissent correctes ; la différence est dans le **coût** (0 correction
+contre 1, 75 lignes contre 128). Détail et limites : [`experiments/spec-vibe/RESULTATS.md`](experiments/spec-vibe/RESULTATS.md).
+
 ## Architecture
 
 ```
@@ -173,6 +199,10 @@ relatifs en `.ts`.
 | flaky ⇒ verdict suspendu | `find.test.ts` |
 | dichotomie = même index, moins d'exécutions | `find.test.ts` |
 | hook `checkpoint-guard` bloque `amend`/`reset --hard` | `.kiro/hooks/checkpoint-guard.test.sh` |
+| **incident réel** : un agent a tenté `git commit --amend` pendant une session capturée, le hook l'a bloqué | [`fixtures/session-hook/incident.md`](fixtures/session-hook/incident.md) |
+| le proxy applique le hook (l'appel refusé n'est pas transmis) | `packages/proxy/test/proxy.test.ts › refuse un appel dont la commande est interdite, sans la transmettre` |
+| bac à sable : horloge logique, HOME jetable, aucune variable GIT | `packages/core/test/sandbox.test.ts` |
+| broker : trois outils, capture réelle, erreur sans mourir | `packages/broker/test/broker.test.ts` |
 | 0 violation axe | `scripts/a11y.mjs` (job CI `a11y`) |
 | fichiers < 500 lignes, fonctions < 50 | `scripts/check-line-limits.mjs` |
 

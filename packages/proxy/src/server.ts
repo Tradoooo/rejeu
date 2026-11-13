@@ -11,13 +11,17 @@
  *   REJEU_PROXY_COMMAND  commande du serveur enveloppé (ex. "node srv.mjs")
  *   REJEU_REPO           dépôt à capturer
  *   REJEU_SESSION        nom de la session
+ *   REJEU_HOOK           hook à faire passer avant chaque appel (optionnel)
  */
 import { spawn, type ChildProcessByStdio } from "node:child_process";
 import type { Readable, Writable } from "node:stream";
 import { createInterface } from "node:readline";
+import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { captureCheckpointIfChanged, verifyChain } from "@rejeu/core";
 
 const COMMAND = process.env.REJEU_PROXY_COMMAND ?? "";
+const HOOK = process.env.REJEU_HOOK ?? "";
 const REPO = process.env.REJEU_REPO ?? process.cwd();
 const SESSION = process.env.REJEU_SESSION ?? "proxy";
 
@@ -89,6 +93,19 @@ function capture(toolName: string, args: Record<string, unknown>): number | null
   }
 }
 
+/**
+ * Fait passer l'appel par le hook (checkpoint-guard). Si le hook refuse
+ * (code 2), l'appel n'est **pas** transmis : la commande destructrice
+ * n'atteint jamais l'agent ni le dépôt.
+ */
+function checkHook(name: string, args: Record<string, unknown>): string | null {
+  if (!HOOK || !existsSync(HOOK)) return null;
+  const payload = JSON.stringify({ command: args.command ?? "", tool: name });
+  const result = spawnSync("bash", [HOOK], { input: payload, encoding: "utf8" });
+  if (result.status === 2) return result.stderr?.trim() || "refusé par le hook";
+  return null;
+}
+
 async function handle(message: Record<string, unknown>): Promise<void> {
   const id = message.id;
   const method = String(message.method ?? "");
@@ -122,8 +139,18 @@ async function handle(message: Record<string, unknown>): Promise<void> {
       process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", id, result: { content: [{ type: "text", text: JSON.stringify(result) }], isError: !result.ok } })}\n`);
       return;
     }
-    const response = await forward(message);
     const args = (params.arguments as Record<string, unknown> | undefined) ?? {};
+    const refusal = checkHook(name, args);
+    if (refusal) {
+      process.stderr.write(`rejeu-proxy : appel refusé par le hook — ${refusal.split("\n")[0]}\n`);
+      process.stdout.write(`${JSON.stringify({
+        jsonrpc: "2.0",
+        id,
+        result: { content: [{ type: "text", text: refusal }], isError: true },
+      })}\n`);
+      return;
+    }
+    const response = await forward(message);
     capture(name, args);
     process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", id, ...(response as object) })}\n`);
     return;

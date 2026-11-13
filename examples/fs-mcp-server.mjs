@@ -6,11 +6,12 @@
  * écrit des fichiers par son intermédiaire, et le proxy capture l'état du
  * dépôt **sans que l'agent ait à coopérer**.
  *
- * Outils : write_file, read_file, list_dir.
+ * Outils : write_file, read_file, list_dir, bash.
  */
 import { createInterface } from "node:readline";
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
+import { spawnSync } from "node:child_process";
 
 const TOOLS = [
   {
@@ -31,6 +32,11 @@ const TOOLS = [
     name: "list_dir",
     description: "Liste le contenu d'un dossier.",
     inputSchema: { type: "object", properties: { path: { type: "string" } }, required: ["path"] },
+  },
+  {
+    name: "bash",
+    description: "Exécute une commande shell dans un dossier.",
+    inputSchema: { type: "object", properties: { command: { type: "string" }, cwd: { type: "string" } }, required: ["command"] },
   },
 ];
 
@@ -77,6 +83,16 @@ reader.on("line", (line) => {
     }
     if (name === "list_dir") {
       result(id, readdirSync(args.path).join("\n"));
+      return;
+    }
+    if (name === "bash") {
+      const run = spawnSync("bash", ["-c", args.command ?? ""], { cwd: args.cwd ?? process.cwd(), encoding: "utf8" });
+      const code = run.status ?? -1;
+      if (code !== 0) {
+        error(id, `code ${code}\n${(run.stderr ?? "").trim()}`);
+        return;
+      }
+      result(id, (run.stdout ?? "").trim() || `code 0`);
       return;
     }
     error(id, `outil inconnu : ${name}`);

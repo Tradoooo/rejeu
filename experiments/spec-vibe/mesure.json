@@ -1,0 +1,21 @@
+{
+  "measuredAt": "2026-11-13T15:56:22.160Z",
+  "rows": [
+    {
+      "variant": "spec",
+      "passed": 14,
+      "failed": 0,
+      "duration": 339,
+      "ownTests": 22,
+      "lines": 75
+    },
+    {
+      "variant": "vibe",
+      "passed": 14,
+      "failed": 0,
+      "duration": 215,
+      "ownTests": 9,
+      "lines": 128
+    }
+  ]
+}

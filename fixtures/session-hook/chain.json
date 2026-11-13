@@ -1,0 +1,17 @@
+{
+  "session": "hook-incident",
+  "repo": "/tmp/rejeu-hook",
+  "createdAt": "2026-11-13T15:48:38.874Z",
+  "entries": [
+    {
+      "index": 0,
+      "tree": "4e1eb8589dcf06b83f6e202af8c29d31a502afa3",
+      "parentTree": null,
+      "tool": "write_file",
+      "action": "write_file:/tmp/rejeu-hook/notes.txt",
+      "at": "2026-11-13T15:48:38.874Z",
+      "outside": {},
+      "digest": "755d93b7dc0cb9fee9c0ddba4fcc7708389f31cacf5d222cc3846ff12b1886d6"
+    }
+  ]
+}

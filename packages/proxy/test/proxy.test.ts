@@ -4,7 +4,7 @@ import { readFileSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { Readable, Writable } from "node:stream";
 import { makeRepo, commit } from "../../core/test/helpers.ts";
-import { loadChain } from "@rejeu/core";
+import { loadChain, verifyChain } from "@rejeu/core";
 
 type Proxy = ChildProcessByStdio<Writable, Readable, null>;
 
@@ -105,5 +105,46 @@ describe("proxy MCP non coopératif", () => {
     expect(chain?.entries.length).toBe(2);
     expect(chain?.entries[1]?.parentTree).toBe(chain?.entries[0]?.tree);
     expect(chain?.entries[0]?.tree).not.toBe(chain?.entries[1]?.tree);
+  });
+});
+
+describe("la chaîne capturée par le proxy est vérifiable", () => {
+  it("passe verifyChain après plusieurs appels capturés", async () => {
+    const repo = makeRepo();
+    repos.push(repo);
+    commit(repo, "init");
+    const proxy = startProxy(repo, "proxy-verif");
+
+    await call(proxy, 1, "initialize");
+    await call(proxy, 2, "tools/call", { name: "write_file", arguments: { path: join(repo, "x.txt"), content: "un\n" } });
+    await call(proxy, 3, "tools/call", { name: "write_file", arguments: { path: join(repo, "y.txt"), content: "deux\n" } });
+
+    const chain = loadChain(repo, "proxy-verif");
+    expect(chain).not.toBeNull();
+    const result = verifyChain(chain!);
+    expect(result.ok).toBe(true);
+    expect(result.checked).toBe(2);
+  });
+});
+
+describe("le hook applique par le proxy", () => {
+  it("refuse un appel dont la commande est interdite, sans la transmettre", async () => {
+    const repo = makeRepo();
+    repos.push(repo);
+    commit(repo, "init");
+    const hook = resolve(__dirname, "../../../.kiro/hooks/checkpoint-guard.sh");
+    const server = resolve(__dirname, "fake-server.mjs");
+    const proxy = spawn("node", [resolve(__dirname, "../src/server.ts")], {
+      stdio: ["pipe", "pipe", "inherit"],
+      env: { ...process.env, REJEU_PROXY_COMMAND: `node ${server}`, REJEU_REPO: repo, REJEU_SESSION: "proxy-hook", REJEU_HOOK: hook },
+    }) as Proxy;
+    proxies.push(proxy);
+
+    await call(proxy, 1, "initialize");
+    const refused = await call(proxy, 2, "tools/call", { name: "bash", arguments: { command: "git commit --amend --no-edit" } });
+    expect(refused.result.isError).toBe(true);
+    expect(refused.result.content[0].text).toContain("checkpoint-guard");
+    // L'appel refusé ne crée aucun checkpoint.
+    expect(loadChain(repo, "proxy-hook")).toBeNull();
   });
 });

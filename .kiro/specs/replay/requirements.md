@@ -23,7 +23,7 @@ vérificateurs passent, cités par leur nom de fichier et de test.
 | REJ-G-03 | Quand le prédicat bascule puis ne se reproduit pas, rejeu **shall** rendre `non-deterministe` et **shall not** désigner une itération fautive. | `find.test.ts › suspend le verdict quand le prédicat est non déterministe` |
 | REJ-G-04 | Quand tous les checkpoints passent, rejeu **shall** rendre `aucun`. | `find.test.ts › rend « aucun » quand tous les checkpoints passent` |
 | REJ-G-05 | En mode dichotomie sur un prédicat monotone, rejeu **shall** rendre le même index qu'en balayage linéaire, en rejouant moins de checkpoints. | `find.test.ts › la dichotomie retrouve le même index et rejoue moins de checkpoints` |
-| REJ-G-06 | Le bac à sable **shall** couper le réseau quand `unshare -n` est disponible, avec une horloge logique (`SOURCE_DATE_EPOCH=0`, `TZ=UTC`). | `packages/core/src/sandbox.ts` ; vérifié par `find.test.ts` (exécution sous `unshare -n` quand le noyau l'autorise) |
+| REJ-G-06 | Le bac à sable **shall** couper le réseau quand `unshare -n` est disponible, avec une horloge logique (`SOURCE_DATE_EPOCH=0`, `TZ=UTC`), et **shall** annoncer honnêtement quand la coupure est refusée. | `packages/core/test/sandbox.test.ts › impose une horloge logique et un HOME jetable`, `… › annonce honnêtement si le réseau n'a pas pu être coupé` |
 
 ## REJ-R — Rapport et accessibilité
 
@@ -39,7 +39,7 @@ vérificateurs passent, cités par leur nom de fichier et de test.
 
 | Id | Exigence (EARS) | Vérificateur |
 |---|---|---|
-| REJ-S-01 | Le broker **shall** exposer `replay_checkpoint`, `first_faulty` et `verify_chain` en JSON-RPC 2.0 sur stdio, sans dépendance. | `packages/broker/src/server.ts` ; vérifié manuellement (voir `KIRO_JOURNAL.md`, entrée « broker ») |
+| REJ-S-01 | Le broker **shall** exposer `replay_checkpoint`, `first_faulty` et `verify_chain` en JSON-RPC 2.0 sur stdio, sans dépendance. | `packages/broker/test/broker.test.ts › annonce ses trois outils` |
 | REJ-S-02 | Quand un outil inconnu est appelé, le broker **shall** répondre `isError: true` sans terminer le processus. | `packages/broker/src/server.ts` (bloc `catch`) |
 
 ## REJ-P — Proxy non coopératif
@@ -50,4 +50,5 @@ vérificateurs passent, cités par leur nom de fichier et de test.
 | REJ-P-02 | Après un appel qui modifie l'état du dépôt, le proxy **shall** enregistrer un checkpoint **sans que l'agent l'ait demandé**. | `packages/proxy/test/proxy.test.ts › capture un checkpoint après un appel mutant, sans que l'agent le demande` |
 | REJ-P-03 | Après un appel qui **ne** modifie pas l'état, le proxy **shall not** créer de checkpoint. | `packages/proxy/test/proxy.test.ts › ne crée pas de checkpoint quand l'état n'a pas changé` |
 | REJ-P-04 | Les checkpoints capturés par le proxy **shall** être chaînés dans l'ordre des appels. | `packages/proxy/test/proxy.test.ts › chaîne les checkpoints dans l'ordre des appels` |
-| REJ-P-05 | La capture par proxy **shall** produire la même chaîne vérifiable que la capture coopérative. | `fixtures/session-proxy/chain.json` (session réelle d'un agent, 13 nov. 2026 : 3 appels → 2 checkpoints) |
+| REJ-P-06 | Quand le hook est configuré, le proxy **shall** refuser un appel dont la commande est interdite, sans la transmettre. | `packages/proxy/test/proxy.test.ts › refuse un appel dont la commande est interdite, sans la transmettre` ; incident réel : `fixtures/session-hook/incident.md` |
+| REJ-P-05 | La capture par proxy **shall** produire la même chaîne vérifiable que la capture coopérative. | `packages/proxy/test/proxy.test.ts › la chaîne capturée par le proxy est vérifiable` (session réelle : `fixtures/session-proxy/chain.json`) |

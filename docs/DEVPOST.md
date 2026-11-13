@@ -36,9 +36,9 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 |---|---|
 | Les specs EARS sont-elles dans `.kiro/specs/` ? | Oui — `replay/requirements.md`, 20 exigences, chacune avec son vérificateur nommé. |
 | Une propriété fast-check a-t-elle échoué pour de vrai ? | Oui — la capture se capturait elle-même (`.replay/` dans l'arbre) : deux captures du même état donnaient deux arbres. Test rouge, correctif, journal. |
-| Un hook a-t-il bloqué quelque chose ? | Oui — `checkpoint-guard` refuse `commit --amend`, `reset --hard`, `checkout -- .` : prouvé par un script exécuté en CI (3 blocages sur 6 entrées). **Ce n'est pas un incident de production** : aucun `amend` n'a été tenté pendant la construction. |
-| Un agent personnalisé en lecture seule ? | **Non fait.** Le relecteur existe comme concept, pas comme agent Kiro livré ; rien dans le dépôt ne le prouve. |
-| Une comparaison chiffrée spec / vibe coding ? | **Non fait.** Aucune mesure de ce type n'a été produite ; la fiche V2 en annonçait une, elle n'est pas reprise. |
+| Un hook a-t-il bloqué quelque chose ? | Oui, et c'est un **incident réel** : pendant une session capturée, un agent (opencode) a tenté `git commit --amend --no-edit` ; le hook l'a refusé et la commande n'a jamais atteint `git`. Daté, transcrit et publié dans `fixtures/session-hook/incident.md`. Reproductible via `.kiro/hooks/checkpoint-guard.test.sh`. |
+| Un agent personnalisé en lecture seule ? | Oui — `relecteur` (lecture seule, vérifie chaîne + exigence ↔ vérificateur) et `testeur` (exécute en bac à sable sans écrire). Implémentés comme scripts exécutables (`tools/relecteur.mjs`, `tools/testeur.mjs`) et définis en `.kiro/agents/`. Le relecteur a déjà trouvé un défaut réel : une exigence sans vérificateur. |
+| Une comparaison chiffrée spec / vibe coding ? | Oui, sur une fonction précise (`isIgnored`) : `experiments/spec-vibe/`. Même modèle, même outillage, différence unique = la présence de la spec. Résultat : 14/14 dans les deux lots, mais 0 correction contre 1, 75 lignes/22 tests contre 128 lignes/9 tests. Limites assumées dans `RESULTATS.md`. |
 | Un usage mesurable de MCP ? | Oui — deux brokers MCP (coopératif et non coopératif) et deux sessions d'agent réelles, avec les temps. |
 | Le steering a-t-il eu un effet avant/après ? | Oui — `determinism.md` (règle d'exclusion) est né d'un défaut mesuré ; l'effet est vérifiable par deux tests. |
 | Le chiffre est-il produit par l'outil ? | Oui — l'index de la version fautive sort d'une exécution réelle ; les temps viennent du banc rejouable. |
@@ -58,7 +58,7 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 | session squashée | recherche manuelle : **0 état retrouvé** ; rejeu : **#0 en 0,6 s** | `docs/MESURES.md` |
 | session réelle d'agent | fautive #0 localisée en 3,0 s | `fixtures/session-agent/` (opencode + broker) |
 | capture non coopérative | 3 appels d'agent → 2 checkpoints | `fixtures/session-proxy/` (proxy MCP) |
-| tests | 29 | `pnpm test:run` |
+| tests | 38 | `pnpm test:run` |
 
 ## Les limites, écrites
 

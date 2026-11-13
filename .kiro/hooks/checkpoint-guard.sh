@@ -9,7 +9,8 @@
 # Sortie : 0 = autorisé, 2 = bloqué avec un message sur stderr.
 set -u
 payload="$(cat)"
-command_text="$(printf '%s' "$payload" | sed -n 's/.*"command"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/p' | head -n1)"
+# Extraction non gloutonne : on s'arrête à la première guillemet fermant.
+command_text="$(printf '%s' "$payload" | sed -n 's/.*"command"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)"
 if [ -z "$command_text" ]; then
   exit 0
 fi

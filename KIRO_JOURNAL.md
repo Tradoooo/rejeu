@@ -190,6 +190,51 @@ Corollaire : le `reel` a été réenregistré — il disait encore « la capture
 coopérative », ce qui n'était plus vrai. La scène 9 montre maintenant la
 preuve du proxy.
 
+### 16:52 — un **incident réel** : le hook a bloqué une commande d'agent
+
+Le hook `checkpoint-guard` n'était prouvé que par un script de test. Il est
+désormais **appliqué par le proxy** (`REJEU_HOOK`) : avant de transmettre un
+appel au serveur enveloppé, le proxy fait passer la commande par le hook ; si le
+hook refuse (code 2), l'appel **n'est pas transmis** et l'agent reçoit l'erreur.
+
+Session réelle (`hook-incident`, opencode 2.1.1) : l'agent écrit `notes.txt`
+(checkpoint #0 capturé), exécute `git add -A` (autorisé, aucun checkpoint : rien
+n'a changé), puis tente `git commit --amend --no-edit` → **refusé** :
+
+```
+checkpoint-guard : « git commit --amend --no-edit » réécrit l'historique d'une session capturée.
+Un checkpoint déjà écrit ne doit pas être invalidé : utilisez un commit de correction.
+```
+
+La commande n'a jamais atteint `git`. Transcription et chaîne :
+`fixtures/session-hook/`.
+
+### 16:55 — le relecteur trouve un vrai défaut dans nos propres specs
+
+`tools/relecteur.mjs` (lecture seule) audite la chaîne **et** la correspondance
+exigence ↔ vérificateur. Premier passage : `REJ-P-05 sans vérificateur nommé` —
+exactement le genre de case que la grille reproche aux autres. Comblé par un
+vrai test (`packages/proxy/test/proxy.test.ts › la chaîne capturée par le proxy
+est vérifiable`). Le relecteur passe ensuite au vert.
+
+Deux autres exigences sans test ont été comblées de la même façon :
+`REJ-S-01` (broker → `packages/broker/test/broker.test.ts`) et `REJ-G-06`
+(bac à sable → `packages/core/test/sandbox.test.ts`). Total : **38 tests**.
+
+### 16:58 — la comparaison spec / vibe coding, mesurée
+
+`experiments/spec-vibe/` : deux sous-agents du même modèle, la même fonction
+(`isIgnored`), l'un avec la spécification EARS, l'autre avec une phrase. Mesure
+objective : **la même** suite de 14 cas contre les deux implémentations.
+
+| Lot | Tests en échec | Tests écrits par l'agent | Lignes | Échecs à la 1ʳᵉ exécution (déclaré) |
+|---|---|---|---|---|
+| spec | 0 | 22 | 75 | 0 |
+| vibe | 0 | 9 | 128 | 1 |
+
+Les deux finissent correctes ; la différence est dans le coût. Limites (une
+fonction, un modèle, une fois ; itérations déclaratives) : `RESULTATS.md`.
+
 ## Ce qui n'est pas encore fait
 
 - La capture sans coopération passe par un serveur MCP **enveloppé** : un agent

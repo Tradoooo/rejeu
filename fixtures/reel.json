@@ -1,11 +1,11 @@
 {
   "session": "opencode-02",
-  "capturedAt": "2026-11-13T15:11:38.104Z",
+  "capturedAt": "2026-11-13T15:21:24.362Z",
   "predicate": "node --test test/parser.test.js",
   "problem": {
     "commitList": "e728651 baseline verte\nfb4d19a état initial : test rouge",
     "diff": "diff --git a/src/parser.js b/src/parser.js\nindex 364080e..f3c8455 100644\n--- a/src/parser.js\n+++ b/src/parser.js\n@@ -1,3 +1,3 @@\n-export function parse(value) {\n+export function parseList(value) {\n   return value.split(\",\").map((part) => part.trim());\n }",
-    "redTest": "file:///tmp/rejeu-reel-kawN0c/.reel-broken/test/parser.test.js:3\nimport { parse } from \"../src/parser.js\";\n         ^^^^^\nSyntaxError: The requested module '../src/parser.js' does not provide an export named 'parse'\n   ⋮   \nℹ skipped 0\nℹ todo 0\nℹ duration_ms 80.024638\n\n✖ failing tests:\n\ntest at test/parser.test.js:1:1\n✖ test/parser.test.js (62.595691ms)\n  'test failed'",
+    "redTest": "file:///tmp/rejeu-reel-YVhURZ/.reel-broken/test/parser.test.js:3\nimport { parse } from \"../src/parser.js\";\n         ^^^^^\nSyntaxError: The requested module '../src/parser.js' does not provide an export named 'parse'\n   ⋮   \nℹ skipped 0\nℹ todo 0\nℹ duration_ms 78.189483\n\n✖ failing tests:\n\ntest at test/parser.test.js:1:1\n✖ test/parser.test.js (66.765478ms)\n  'test failed'",
     "redTestFailed": true
   },
   "capture": {
@@ -13,7 +13,7 @@
     "chain": "[\n  {\n    \"index\": 0,\n    \"tool\": \"edit\",\n    \"action\": \"edit:src/parser.js\",\n    \"tree\": \"57b095fd03\"\n  },\n  {\n    \"index\": 1,\n    \"tool\": \"edit\",\n    \"action\": \"edit:test/parser.test.js\",\n    \"tree\": \"9a812d13c5\"\n  }\n]"
   },
   "find": {
-    "stdout": "REJEU · session opencode-02 · 2 checkpoints · 2 rejoués\nVERDICT  Itération fautive #0 — premier checkpoint où le prédicat bascule.\nTEMPS    0.6 s · hôte intact",
+    "stdout": "REJEU · session opencode-02 · 2 checkpoints · 2 rejoués\nVERDICT  Itération fautive #0 — premier checkpoint où le prédicat bascule.\nTEMPS    0.5 s · hôte intact",
     "stderr": ""
   },
   "hook": {
@@ -22,7 +22,7 @@
     "code": 2
   },
   "report": {
-    "path": "rapport /tmp/rejeu-reel-kawN0c/.replay/opencode-02/report.html"
+    "path": "rapport /tmp/rejeu-reel-YVhURZ/.replay/opencode-02/report.html"
   },
   "measures": {
     "sessions": 20,
@@ -33,5 +33,69 @@
     "maxSeconds": 4.02,
     "replayed": 95,
     "checkpoints": 162
+  },
+  "proxyCalls": {
+    "note": "Sortie réelle de la session opencode du 13 nov. 2026 : l'agent n'a jamais été informé de l'existence de rejeu.",
+    "agent": "opencode 2.1.1 (inferhub/ag/claude-sonnet-4-6)",
+    "wrappedServer": "examples/fs-mcp-server.mjs",
+    "proxy": "packages/proxy/src/server.ts",
+    "calls": [
+      {
+        "step": 1,
+        "tool": "fs-proxy.write_file",
+        "input": {
+          "path": "un.txt",
+          "content": "un"
+        },
+        "captured": true
+      },
+      {
+        "step": 2,
+        "tool": "fs-proxy.list_dir",
+        "input": {
+          "path": "."
+        },
+        "captured": false,
+        "why": "aucun changement d'état : pas de checkpoint"
+      },
+      {
+        "step": 3,
+        "tool": "fs-proxy.write_file",
+        "input": {
+          "path": "deux.txt",
+          "content": "deux"
+        },
+        "captured": true
+      }
+    ],
+    "captured": 2,
+    "callsCount": 3
+  },
+  "proxyChain": {
+    "session": "proxy-agent",
+    "repo": "/tmp/rejeu-proxy-real",
+    "createdAt": "2026-11-13T15:20:21.086Z",
+    "entries": [
+      {
+        "index": 0,
+        "tree": "dba33a39aa69483634d02f0c40b9224b22aea9c6",
+        "parentTree": null,
+        "tool": "write_file",
+        "action": "write_file:un.txt",
+        "at": "2026-11-13T15:20:21.086Z",
+        "outside": {},
+        "digest": "efe4414df5c8d6849443d7e15dd677aa4126828f22ee60f9e30ae4f5d4969b03"
+      },
+      {
+        "index": 1,
+        "tree": "3c3d6811b322e2efcd9b7cb16958e8b5f2754b14",
+        "parentTree": "dba33a39aa69483634d02f0c40b9224b22aea9c6",
+        "tool": "write_file",
+        "action": "write_file:deux.txt",
+        "at": "2026-11-13T15:20:29.067Z",
+        "outside": {},
+        "digest": "591a69c6d2421a8e612668565113553e6e7ade3bda939328ea9692f1b962fd4b"
+      }
+    ]
   }
 }

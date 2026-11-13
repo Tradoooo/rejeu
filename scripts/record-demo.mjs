@@ -41,8 +41,9 @@ const page = await context.newPage();
 await page.goto(`http://127.0.0.1:${port}/reel.html`, { waitUntil: "load" });
 
 // Le reel se termine quand la dernière scène est affichée (durée cumulée).
+// La durée totale vient de la page (source unique de vérité du minutage).
 const total = await page.evaluate(() => {
-  const durations = [5200, 9000, 7000, 7000, 5200, 6000, 7000, 5200, 5200];
+  const durations = window.REJUEL_DURATIONS ?? [];
   return durations.reduce((sum, value) => sum + value, 0);
 });
 await page.waitForTimeout(total + 2500);

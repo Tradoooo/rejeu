@@ -199,6 +199,12 @@ importers:
 
   packages/core: {}
 
+  packages/proxy:
+    dependencies:
+      '@rejeu/core':
+        specifier: workspace:*
+        version: link:../core
+
 packages:
 
   '@axe-core/playwright@4.11.0':

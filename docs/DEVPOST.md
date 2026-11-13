@@ -41,6 +41,7 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 | violations axe | 0 | `node scripts/a11y.mjs` |
 | vidéo | 59 s, H.264, sorties réelles | `node scripts/capture-reel.mjs && node scripts/record-demo.mjs` |
 | session réelle d'agent | fautive #0 localisée en 3,0 s | `fixtures/session-agent/` (opencode + broker) |
+| capture non coopérative | 3 appels d'agent → 2 checkpoints | `fixtures/session-proxy/` (proxy MCP) |
 | tests | 25 | `pnpm test:run` |
 
 ## Les limites, écrites
@@ -49,5 +50,5 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 - Seuls les appels passés par le broker sont capturés.
 - Linux uniquement pour la coupure réseau ; macOS/Windows hors périmètre v0.1.
 - La chaîne prouve l'intégrité du journal, pas l'honnêteté de l'agent.
-- La capture est **coopérative** (l'agent appelle le checkpoint) ; le proxy d'outils transparent reste à faire.
+- Deux modes de capture : coopérative (l'agent appelle le checkpoint) ou **non coopérative** (un proxy MCP enveloppe les outils de l'agent et capture chaque changement d'état). Le second mode exige que l'agent passe par un serveur MCP enveloppé.
 - La vidéo est faite (59 s) ; elle montre une session réelle, pas une maquette.

@@ -1,0 +1,27 @@
+{
+  "session": "proxy-agent",
+  "repo": "/tmp/rejeu-proxy-real",
+  "createdAt": "2026-11-13T15:20:21.086Z",
+  "entries": [
+    {
+      "index": 0,
+      "tree": "dba33a39aa69483634d02f0c40b9224b22aea9c6",
+      "parentTree": null,
+      "tool": "write_file",
+      "action": "write_file:un.txt",
+      "at": "2026-11-13T15:20:21.086Z",
+      "outside": {},
+      "digest": "efe4414df5c8d6849443d7e15dd677aa4126828f22ee60f9e30ae4f5d4969b03"
+    },
+    {
+      "index": 1,
+      "tree": "3c3d6811b322e2efcd9b7cb16958e8b5f2754b14",
+      "parentTree": "dba33a39aa69483634d02f0c40b9224b22aea9c6",
+      "tool": "write_file",
+      "action": "write_file:deux.txt",
+      "at": "2026-11-13T15:20:29.067Z",
+      "outside": {},
+      "digest": "591a69c6d2421a8e612668565113553e6e7ade3bda939328ea9692f1b962fd4b"
+    }
+  ]
+}

@@ -61,12 +61,19 @@
   </section>
 
   <section class="scene" data-scene="9">
+    <h2>Capture non coopérative : l'agent ne sait rien</h2>
+    <pre class="term" data-role="calls"></pre>
+    <pre class="term ok" data-role="proxychain"></pre>
+    <p class="note">Un proxy MCP enveloppe le serveur d'outils de l'agent et capture l'état du dépôt à chaque changement — <strong>sans que l'agent ait à coopérer</strong>. Trois appels d'outil, deux checkpoints : l'appel de lecture n'en produit aucun.</p>
+  </section>
+
+  <section class="scene" data-scene="10">
     <h2>Ce que Rejeu ne fait pas</h2>
     <ul class="limits">
       <li>Il ne prouve pas que le modèle est reproductible.</li>
       <li>Il ne remplace pas la revue de code.</li>
-      <li>Il ne capture que ce qui passe par le broker.</li>
-      <li>La capture est coopérative : l'agent appelle le checkpoint.</li>
+      <li>Il ne capture que ce qui passe par le broker ou le proxy : un agent qui n'utilise ni l'un ni l'autre n'est pas capturé.</li>
+      <li>La coupure réseau suppose Linux.</li>
     </ul>
     <p class="end">github.com/Tradoooo/rejeu · tradoooo.github.io/rejeu</p>
   </section>

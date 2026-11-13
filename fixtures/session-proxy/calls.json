@@ -1,0 +1,13 @@
+{
+  "note": "Sortie réelle de la session opencode du 13 nov. 2026 : l'agent n'a jamais été informé de l'existence de rejeu.",
+  "agent": "opencode 2.1.1 (inferhub/ag/claude-sonnet-4-6)",
+  "wrappedServer": "examples/fs-mcp-server.mjs",
+  "proxy": "packages/proxy/src/server.ts",
+  "calls": [
+    { "step": 1, "tool": "fs-proxy.write_file", "input": { "path": "un.txt", "content": "un" }, "captured": true },
+    { "step": 2, "tool": "fs-proxy.list_dir", "input": { "path": "." }, "captured": false, "why": "aucun changement d'état : pas de checkpoint" },
+    { "step": 3, "tool": "fs-proxy.write_file", "input": { "path": "deux.txt", "content": "deux" }, "captured": true }
+  ],
+  "captured": 2,
+  "callsCount": 3
+}

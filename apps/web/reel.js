@@ -36,6 +36,18 @@ function stats(measures) {
   return cells.map(([value, label]) => `<div class="stat"><b>${value}</b><span>${label}</span></div>`).join("");
 }
 
+/** Scène « capture non coopérative » : appels réels de l'agent + chaîne capturée. */
+function proxyScene() {
+  const calls = reel.proxyCalls;
+  const chain = reel.proxyChain;
+  const lines = calls.calls.map((call) => {
+    const mark = call.captured ? "✓ checkpoint capturé" : "· aucun checkpoint (état inchangé)";
+    return `appel ${call.step} · ${call.tool.padEnd(20)} ${mark}`;
+  });
+  const captured = chain.entries.map((entry) => `#${entry.index}  ${entry.tool.padEnd(12)} ${entry.action}`);
+  return { lines: lines.join("\n"), captured: captured.join("\n") };
+}
+
 async function show(index) {
   for (const scene of scenes) scene.classList.remove("on");
   const scene = scenes[index];
@@ -51,9 +63,17 @@ async function show(index) {
   if (role("hook")) await type(role("hook"), reel.hook.stderr, 8);
   if (role("timeline")) role("timeline").innerHTML = timeline(reel.capture.chain ? JSON.parse(reel.capture.chain) : []);
   if (role("stats")) role("stats").innerHTML = stats(reel.measures);
+  if (role("calls")) {
+    const scene = proxyScene();
+    await type(role("calls"), scene.lines, 10);
+    await type(role("proxychain"), scene.captured, 10);
+  }
 }
 
-const DURATIONS = [5200, 9000, 7000, 7000, 5200, 6000, 7000, 5200, 5200];
+const DURATIONS = [5200, 9000, 7000, 7000, 5200, 6000, 7000, 5200, 7000, 5200];
+// Les durées sont exposées : l'enregistreur les lit dans la page (une seule
+// source de vérité pour le minutage du reel et pour l'enregistrement).
+window.REJUEL_DURATIONS = DURATIONS;
 let index = 0;
 await show(index);
 while (index < scenes.length) {

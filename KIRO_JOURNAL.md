@@ -161,11 +161,39 @@ Piège d'outillage : `record-demo.mjs` ré-encode **la première** vidéo
 alphabétiquement trouvée dans `docs/demo/raw/` — donc l'ancienne, pas la
 nouvelle. Le répertoire de travail est maintenant vidé avant chaque prise.
 
+### 16:25 — le proxy non coopératif, prouvé sur un agent qui n'en sait rien
+
+`packages/proxy/src/server.ts` : un serveur MCP qui **enveloppe** un autre
+serveur MCP (le « serveur enveloppé »), lui transmet les appels inchangés,
+et capture l'état du dépôt après chaque appel — **si et seulement s'il a
+changé** (`captureCheckpointIfChanged`).
+
+Configuration réelle, sur un agent `opencode` 2.1.1, avec un serveur de
+fichiers minimal (`examples/fs-mcp-server.mjs`) :
+
+```
+opencode mcp add fs-proxy \
+  --env REJEU_PROXY_COMMAND="node examples/fs-mcp-server.mjs" \
+  --env REJEU_REPO=/tmp/rejeu-proxy-real --env REJEU_SESSION=proxy-agent \
+  -- node packages/proxy/src/server.ts
+```
+
+Consigne donnée à l'agent : « utilise uniquement le serveur MCP fs-proxy ».
+**Rien sur rejeu, rien sur les checkpoints.** Résultat : 3 appels
+(`write_file`, `list_dir`, `write_file`) → **2 checkpoints** ; l'appel de
+lecture n'en produit aucun. La chaîne est dans `fixtures/session-proxy/`.
+
+Quatre tests couvrent le proxy (outils transmis, capture après appel mutant,
+absence de capture sans changement, ordre des checkpoints).
+
+Corollaire : le `reel` a été réenregistré — il disait encore « la capture est
+coopérative », ce qui n'était plus vrai. La scène 9 montre maintenant la
+preuve du proxy.
+
 ## Ce qui n'est pas encore fait
 
-- **Capture sans coopération** : la session réelle ci-dessus fonctionne, mais
-  c'est l'agent qui appelle le checkpoint. Un proxy qui interpose les outils de
-  l'agent (pour capturer sans le lui demander) n'est pas fait.
+- La capture sans coopération passe par un serveur MCP **enveloppé** : un agent
+  qui n'utilise aucun serveur MCP n'est pas capturé.
 - **Comparaison spec / vibe coding** : non mesurée. La fiche V2 annonçait
   « 3 h 20 / 14 allers-retours / 3 défauts contre 1 h 05 / 27 allers-retours
   / 6 défauts » ; ces chiffres n'ont pas été produits ici et ne sont pas

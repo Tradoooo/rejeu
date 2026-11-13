@@ -20,6 +20,14 @@ const PREDICATE = "node --test test/parser.test.js";
 const CLI = resolve("packages/cli/src/index.ts");
 const HOOK = resolve(".kiro/hooks/checkpoint-guard.sh");
 
+function readJson(path) {
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
 /** Mesures du banc (corpus/out/mesure.json) : les chiffres affichés sont les miens. */
 function readMeasures() {
   try {
@@ -101,6 +109,8 @@ try {
     hook: { stdout: hook.stdout, stderr: hook.stderr, code: hook.code },
     report: { path: report.stdout },
     measures: readMeasures(),
+    proxyCalls: readJson(resolve("fixtures", "session-proxy", "calls.json")),
+    proxyChain: readJson(resolve("fixtures", "session-proxy", "chain.json")),
   };
   mkdirSync(resolve("fixtures"), { recursive: true });
   writeFileSync(resolve("fixtures", "reel.json"), `${JSON.stringify(reel, null, 2)}\n`);

@@ -49,6 +49,26 @@ Limite : la capture est **coopérative** (l'agent appelle `replay_checkpoint`
 parce que le prompt le lui demande). Un proxy qui interpose les outils de
 l'agent reste à faire.
 
+## Capture non coopérative (l'agent ne sait rien)
+
+Le mode coopératif suppose que l'agent appelle `rejeu_replay_checkpoint`. Le
+**proxy** supprime cette condition : il s'interpose entre l'agent et son
+serveur MCP d'outils, transmet les appels inchangés, et capture l'état du
+dépôt **à chaque changement**, sans que l'agent le sache.
+
+```bash
+# L'agent est configuré avec le proxy, pas avec le serveur enveloppé :
+opencode mcp add fs-proxy \
+  --env REJEU_PROXY_COMMAND="node examples/fs-mcp-server.mjs" \
+  --env REJEU_REPO="$PWD" --env REJEU_SESSION=ma-session \
+  -- node packages/proxy/src/server.ts
+```
+
+Prouvé sur un agent réel le 13 novembre 2026 : **3 appels d'outil → 2
+checkpoints** — l'appel de lecture (`list_dir`) n'en produit aucun, les deux
+écritures en produisent un chacune. Artefacts :
+[`fixtures/session-proxy/`](fixtures/session-proxy/).
+
 ## En 60 secondes sur votre dépôt
 
 ```bash
@@ -105,6 +125,7 @@ d'agent réelle et la vidéo ne sont **pas** faites — c'est écrit dans
 packages/core     store de checkpoints · chaîne d'attestation · bac à sable · localisation · rapport
 packages/cli      capture · ls · verify · find · report
 packages/broker   serveur MCP stdio (zéro dépendance) : replay_checkpoint, first_faulty, verify_chain
+packages/proxy    proxy MCP non coopératif : capture à chaque changement d'état
 apps/web          démonstration hors ligne (quatre états) + rapports imprimables
 scripts           fixture de démo · build du site · axe · garde-fou de structure
 corpus            banc de 20 sessions (générateur + mesure)

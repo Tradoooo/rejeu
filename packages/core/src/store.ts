@@ -75,41 +75,56 @@ export interface CaptureOptions {
   outside?: Record<string, string>;
 }
 
-/**
- * Capture un checkpoint sans toucher à l'index ni à l'arbre de travail :
- * l'index est un fichier temporaire, l'arbre est écrit dans la base d'objets.
- */
-export function captureCheckpoint(options: CaptureOptions): Checkpoint {
-  const { repo, session, tool, action } = options;
+/** Calcule l'arbre courant sans rien écrire (index temporaire). */
+function currentTree(repo: string): string {
   const tempIndex = join(tmpdir(), `rejeu-index-${randomUUID()}`);
   const env = { GIT_INDEX_FILE: tempIndex };
   try {
     indexWithTempFile(repo, env);
     gitOrThrow(repo, ["add", "-A", "--", "."], env);
     dropIgnoredPaths(repo, env, readIgnore(repo));
-    const tree = gitOrThrow(repo, ["write-tree"], env);
-    const chain = loadChain(repo, session) ?? {
-      session,
-      repo,
-      createdAt: options.at ?? new Date().toISOString(),
-      entries: [],
-    };
-    const previous = chain.entries.at(-1) ?? null;
-    const entry = makeEntry(previous, {
-      tree,
-      parentTree: previous ? previous.tree : null,
-      tool,
-      action,
-      at: options.at ?? logicalNow(),
-      outside: options.outside ?? {},
-    });
-    chain.entries.push(entry);
-    saveChain(repo, chain);
-    return entry;
+    return gitOrThrow(repo, ["write-tree"], env);
   } finally {
     rmSync(tempIndex, { force: true });
     rmSync(`${tempIndex}.lock`, { force: true });
   }
+}
+
+/**
+ * Capture un checkpoint sans toucher à l'index ni à l'arbre de travail :
+ * l'index est un fichier temporaire, l'arbre est écrit dans la base d'objets.
+ */
+export function captureCheckpoint(options: CaptureOptions): Checkpoint {
+  const chain = loadChain(options.repo, options.session);
+  const previous = chain?.entries.at(-1) ?? null;
+  const tree = currentTree(options.repo);
+  const entry = makeEntry(previous, {
+    tree,
+    parentTree: previous ? previous.tree : null,
+    tool: options.tool,
+    action: options.action,
+    at: options.at ?? logicalNow(),
+    outside: options.outside ?? {},
+  });
+  saveChain(options.repo, {
+    session: options.session,
+    repo: options.repo,
+    createdAt: chain?.createdAt ?? entry.at,
+    entries: [...(chain?.entries ?? []), entry],
+  });
+  return entry;
+}
+
+/**
+ * Variante « proxy » : n'écrit un checkpoint que si l'état a changé.
+ * Un appel d'outil en lecture seule ne pollue donc pas la timeline.
+ */
+export function captureCheckpointIfChanged(options: CaptureOptions): Checkpoint | null {
+  const chain = loadChain(options.repo, options.session);
+  const previous = chain?.entries.at(-1) ?? null;
+  const tree = currentTree(options.repo);
+  if (previous && previous.tree === tree) return null;
+  return captureCheckpoint(options);
 }
 
 /** Horloge logique par défaut : SOURCE_DATE_EPOCH, sinon l'instant UTC arrondi. */

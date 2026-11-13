@@ -41,3 +41,13 @@ vérificateurs passent, cités par leur nom de fichier et de test.
 |---|---|---|
 | REJ-S-01 | Le broker **shall** exposer `replay_checkpoint`, `first_faulty` et `verify_chain` en JSON-RPC 2.0 sur stdio, sans dépendance. | `packages/broker/src/server.ts` ; vérifié manuellement (voir `KIRO_JOURNAL.md`, entrée « broker ») |
 | REJ-S-02 | Quand un outil inconnu est appelé, le broker **shall** répondre `isError: true` sans terminer le processus. | `packages/broker/src/server.ts` (bloc `catch`) |
+
+## REJ-P — Proxy non coopératif
+
+| Id | Exigence (EARS) | Vérificateur |
+|---|---|---|
+| REJ-P-01 | Quand l'agent appelle un outil d'un serveur MCP enveloppé, le proxy **shall** transmettre l'appel inchangé et **shall** exposer les mêmes outils. | `packages/proxy/test/proxy.test.ts › présente les outils du serveur enveloppé et ajoute la vérification de chaîne` |
+| REJ-P-02 | Après un appel qui modifie l'état du dépôt, le proxy **shall** enregistrer un checkpoint **sans que l'agent l'ait demandé**. | `packages/proxy/test/proxy.test.ts › capture un checkpoint après un appel mutant, sans que l'agent le demande` |
+| REJ-P-03 | Après un appel qui **ne** modifie pas l'état, le proxy **shall not** créer de checkpoint. | `packages/proxy/test/proxy.test.ts › ne crée pas de checkpoint quand l'état n'a pas changé` |
+| REJ-P-04 | Les checkpoints capturés par le proxy **shall** être chaînés dans l'ordre des appels. | `packages/proxy/test/proxy.test.ts › chaîne les checkpoints dans l'ordre des appels` |
+| REJ-P-05 | La capture par proxy **shall** produire la même chaîne vérifiable que la capture coopérative. | `fixtures/session-proxy/chain.json` (session réelle d'un agent, 13 nov. 2026 : 3 appels → 2 checkpoints) |

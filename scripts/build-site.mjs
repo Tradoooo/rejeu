@@ -38,6 +38,13 @@ writeFileSync(
 copyFileSync(join(root, "fixtures", "demo", "flaky.json"), join(out, "data", "flaky.json"));
 copyFileSync(join(root, "fixtures", "reel.json"), join(out, "data", "reel.json"));
 
+// Session capturée par le proxy non coopératif (agent réel, 13 nov. 2026).
+const proxyDir = join(root, "fixtures", "session-proxy");
+if (existsSync(join(proxyDir, "chain.json"))) {
+  copyFileSync(join(proxyDir, "chain.json"), join(out, "data", "proxy-chain.json"));
+  copyFileSync(join(proxyDir, "calls.json"), join(out, "data", "proxy-calls.json"));
+}
+
 // La vidéo de démonstration (MP4 H.264) est publiée avec le site : elle montre
 // des sorties réellement produites par scripts/capture-reel.mjs.
 const demo = join(root, "docs", "demo", "rejeu-demo.mp4");

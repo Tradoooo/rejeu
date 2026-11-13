@@ -8,6 +8,15 @@ const esc = (value) =>
 
 let data = null;
 let flaky = null;
+// Un seul état animé à la fois : changer d'état annule la progression en cours.
+let pendingTimer = null;
+
+function cancelPending() {
+  if (pendingTimer !== null) {
+    clearInterval(pendingTimer);
+    pendingTimer = null;
+  }
+}
 
 async function load() {
   const [main, unstable] = await Promise.all([
@@ -49,6 +58,7 @@ function renderChargement() {
     <div class="bar" role="progressbar" aria-labelledby="prog" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="1"><span style="width:14%"></span></div>
     <p class="muted">Chaque checkpoint est extrait dans un répertoire jetable, réseau coupé, puis le prédicat y est réellement exécuté.</p>
     <button type="button" id="annuler">Annuler</button>`;
+  cancelPending();
   let step = 1;
   const timer = setInterval(() => {
     step += 1;
@@ -57,15 +67,17 @@ function renderChargement() {
     const progress = zone.querySelector("[role=progressbar]");
     if (!bar || !label || !progress || step > total) {
       clearInterval(timer);
-      renderSucces();
+      pendingTimer = null;
+      if (step > total) renderSucces();
       return;
     }
     label.textContent = `checkpoint ${step}/${total} — prédicat en cours…`;
     bar.style.width = `${Math.round((step / total) * 100)}%`;
     progress.setAttribute("aria-valuenow", String(step));
   }, 420);
+  pendingTimer = timer;
   zone.querySelector("#annuler")?.addEventListener("click", () => {
-    clearInterval(timer);
+    cancelPending();
     renderVide();
   });
 }
@@ -100,6 +112,7 @@ function renderSucces() {
 }
 
 function select(name) {
+  cancelPending();
   for (const button of buttons) button.setAttribute("aria-pressed", String(button.dataset.state === name));
   if (name === "vide") renderVide();
   else if (name === "chargement") renderChargement();

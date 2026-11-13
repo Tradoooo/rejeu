@@ -39,4 +39,4 @@ export function writeProject(dir: string, values: { parse: string; test: string 
 
 export const GOOD_PARSER = `export function parse(value) {\n  return value.split(",").map((part) => part.trim());\n}\n`;
 export const BAD_PARSER = `export function parse(value) {\n  return value.split(",,").map((part) => part.trim());\n}\n`;
-export const PARSER_TEST = `import test from "node:test";\nimport assert from "node:assert/strict";\nimport { parse } from "../src/parser.ts";\n\ntest("découpe sur la virgule", () => {\n  assert.deepEqual(parse("a,b,c"), ["a", "b", "c"]);\n});\n`;
+export const PARSER_TEST = `import test from "node:test";\nimport assert from "node:assert/strict";\nimport { parse } from "../src/parser.js";\n\ntest("découpe sur la virgule", () => {\n  assert.deepEqual(parse("a,b,c"), ["a", "b", "c"]);\n});\n`;

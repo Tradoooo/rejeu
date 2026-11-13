@@ -94,6 +94,25 @@ passées. Une règle de contraste reste *non concluante* sur les rapports :
 `axe` ne sait pas résoudre `color-mix()` ; c'est écrit ici plutôt que
 présenté comme un sans-faute.
 
+### 14:48 — la CI a trouvé un défaut que le poste cachait
+
+Premier run GitHub : `find.test.ts` échoue **partout** (index 0, « localisé »
+au lieu de « aucun »). Diagnostic par un script isolé (`core` sans vitest) :
+le prédicat échouait sur **chaque** checkpoint, donc l'outil faisait
+exactement ce qu'il devait — c'est la fixture qui était fausse.
+
+Cause : un `sed`-like trop large, lancé pour passer les imports de `.js` à
+`.ts`, avait réécrit **la chaîne de caractères à l'intérieur du texte de la
+fixture** : le test généré importait `../src/parser.ts`, fichier inexistant
+dans le dépôt capturé. Leçon : ne jamais appliquer un remplacement d'imports
+sur un fichier qui contient du code en littéral ; et un prédicat qui échoue
+partout est un symptôme de fixture, pas de moteur.
+
+Deuxième correction issue du même run : la sonde `unshare -n true` peut
+réussir là où l'usage réel est refusé. `sandbox.ts` relance alors **sans**
+coupure réseau et rend `networkCut: false` — dégradation annoncée, jamais
+silencieuse.
+
 ## Ce qui n'est pas encore fait
 
 - **Capture d'une session d'agent réelle** (CLI headless + broker MCP) : le

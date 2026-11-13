@@ -91,9 +91,16 @@ export async function runAtCheckpoint(
   try {
     extractTree(repo, checkpoint.tree, work);
     writeFileSync(join(home, ".rejeu"), "sandbox\n", "utf8");
-    const cut = options.cutNetwork !== false && canCutNetwork();
+    let cut = options.cutNetwork !== false && canCutNetwork();
     const command = cut ? `unshare -n bash -c ${JSON.stringify(options.predicate)}` : options.predicate;
-    const run = await runShell(command, work, sandboxEnv(home), options.timeoutMs ?? 120_000);
+    let run = await runShell(command, work, sandboxEnv(home), options.timeoutMs ?? 120_000);
+    // La sonde `unshare -n true` peut réussir là où l'usage réel est refusé
+    // (namespaces utilisateur restreints). On ne dégrade pas le verdict en
+    // silence : on relance sans coupure et on l'annonce (`networkCut: false`).
+    if (cut && /^unshare:/m.test(run.stderr)) {
+      cut = false;
+      run = await runShell(options.predicate, work, sandboxEnv(home), options.timeoutMs ?? 120_000);
+    }
     return {
       ok: run.code === 0,
       code: run.code,

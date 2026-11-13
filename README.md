@@ -175,6 +175,12 @@ phrase. La **même** suite de 14 cas est ensuite exécutée contre les deux.
 Les deux finissent correctes ; la différence est dans le **coût** (0 correction
 contre 1, 75 lignes contre 128). Détail et limites : [`experiments/spec-vibe/RESULTATS.md`](experiments/spec-vibe/RESULTATS.md).
 
+## Les jugements
+
+Un juge indépendant (la grille seule, sans la fiche d'origine) a noté le dépôt
+**60/100** puis **78/100** après les corrections — les deux verdicts, et ce qui
+a été fait en réponse, sont publiés : [`docs/jugements.md`](docs/jugements.md).
+
 ## Les concurrents, honnêtement
 
 [`docs/CONCURRENTS.md`](docs/CONCURRENTS.md) compare **20 concurrents** vérifiés

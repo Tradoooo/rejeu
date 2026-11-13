@@ -14,4 +14,4 @@
 | L10 | Accessibilité : axe 0 violation sur les 3 pages | **fait** | job CI `a11y` |
 | L11 | Corpus de banc 20 sessions, mesures réelles (temps, localisation) | **fait** | `corpus/measure.mjs`, `docs/MESURES.md` |
 | L12 | Capture d'une session d'agent réelle via le broker | **fait** | `fixtures/session-agent/` (opencode 2.1.1 + broker, 2 checkpoints, verdict #0) |
-| L13 | Vidéo de démonstration (< 3 min) | **à faire** | — |
+| L13 | Vidéo de démonstration (< 3 min) | **fait** | `docs/demo/rejeu-demo.mp4` — 59 s, H.264, sorties réelles (`scripts/capture-reel.mjs` + `record-demo.mjs`) |

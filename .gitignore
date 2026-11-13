@@ -4,3 +4,4 @@ dist/
 corpus/out/
 *.log
 .DS_Store
+docs/demo/raw/

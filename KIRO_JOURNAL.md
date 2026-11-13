@@ -138,12 +138,34 @@ Limite, écrite : la capture est **coopérative** — l'agent appelle
 `replay_checkpoint` parce que le prompt le lui demande. Un vrai proxy d'outils
 (qui capture sans coopération) reste à faire.
 
+### 16:10 — la vidéo, construite à partir d'exécutions réelles
+
+Plutôt qu'un storyboard (celui de la fiche n'a jamais été tourné), la vidéo est
+**enregistrée** : `scripts/capture-reel.mjs` rejoue la session réelle de
+l'agent dans un dépôt temporaire (état fautif extrait comme rejeu le fait,
+test exécuté, diff réel, hook invoqué, `rejeu find` relancé) et écrit
+`fixtures/reel.json` ; `apps/web/reel.html` joue ces sorties scène par scène ;
+`scripts/record-demo.mjs` enregistre avec Playwright et convertit en MP4
+H.264 1280×720 (`docs/demo/rejeu-demo.mp4`, 59 s, 1,3 Mo, sans narration).
+
+Trois défauts vus **au rendu réel** (cadres extraits du MP4) et corrigés :
+
+1. le diff montrait `.replay/opencode-01/chain.json` — le journal avait été
+   committé par erreur dans le dépôt du banc ; le diff est désormais limité à
+   `src`, `test`, `package.json` ;
+2. la sortie du test rouge était noyée dans la pile d'erreurs : elle est
+   maintenant tronquée (début + fin) ;
+3. le compteur « 1,9 s » perdait son zéro : format fixe à deux décimales.
+
+Piège d'outillage : `record-demo.mjs` ré-encode **la première** vidéo
+alphabétiquement trouvée dans `docs/demo/raw/` — donc l'ancienne, pas la
+nouvelle. Le répertoire de travail est maintenant vidé avant chaque prise.
+
 ## Ce qui n'est pas encore fait
 
 - **Capture sans coopération** : la session réelle ci-dessus fonctionne, mais
   c'est l'agent qui appelle le checkpoint. Un proxy qui interpose les outils de
   l'agent (pour capturer sans le lui demander) n'est pas fait.
-- **Vidéo** : aucun plan tourné.
 - **Comparaison spec / vibe coding** : non mesurée. La fiche V2 annonçait
   « 3 h 20 / 14 allers-retours / 3 défauts contre 1 h 05 / 27 allers-retours
   / 6 défauts » ; ces chiffres n'ont pas été produits ici et ne sont pas

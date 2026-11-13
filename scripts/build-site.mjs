@@ -12,7 +12,7 @@ const out = join(root, "apps", "web", "dist");
 rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, "data"), { recursive: true });
 
-for (const file of ["index.html", "app.js", "style.css"]) {
+for (const file of ["index.html", "app.js", "style.css", "reel.html", "reel.js", "reel.css"]) {
   copyFileSync(join(root, "apps", "web", file), join(out, file));
 }
 
@@ -36,6 +36,15 @@ writeFileSync(
   `${JSON.stringify({ verdict, chain, diff, predicate, verification: verifyChain(chain), sessionDigest }, null, 2)}\n`,
 );
 copyFileSync(join(root, "fixtures", "demo", "flaky.json"), join(out, "data", "flaky.json"));
+copyFileSync(join(root, "fixtures", "reel.json"), join(out, "data", "reel.json"));
+
+// La vidéo de démonstration (MP4 H.264) est publiée avec le site : elle montre
+// des sorties réellement produites par scripts/capture-reel.mjs.
+const demo = join(root, "docs", "demo", "rejeu-demo.mp4");
+if (existsSync(demo)) {
+  mkdirSync(join(out, "demo"), { recursive: true });
+  copyFileSync(demo, join(out, "demo", "rejeu-demo.mp4"));
+}
 
 // Session réelle d'un agent (opencode + broker MCP), capturée le 13 nov. 2026 :
 // le rapport est publié tel quel, et la chaîne brute est consultable.

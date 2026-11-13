@@ -17,6 +17,15 @@ VERDICT  Itération fautive #2 — premier checkpoint où le prédicat bascule. 
 TEMPS    1,1 s · hôte intact · CHAÎNE vérifiée 7/7
 ```
 
+## Vidéo (59 s)
+
+▶ [`docs/demo/rejeu-demo.mp4`](docs/demo/rejeu-demo.mp4) — H.264 1280×720, sans
+narration. **Toutes les sorties affichées sont produites par de vraies
+exécutions** : `scripts/capture-reel.mjs` rejoue la session réelle de l'agent
+(état fautif extrait, test exécuté, hook invoqué, recherche relancée) et le
+reel n'affiche que ces sorties. La vidéo est aussi publiée avec le site :
+https://tradoooo.github.io/rejeu/demo/rejeu-demo.mp4
+
 ## Démonstration (hors ligne, 30 s)
 
 → **https://tradoooo.github.io/rejeu/**

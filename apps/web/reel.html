@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rejeu — reel de démonstration</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="reel.css">
+</head>
+<body class="reel">
+<div id="stage" class="stage" aria-live="polite">
+  <div class="brand">REJEU <span>· rejouer les versions d'un agent, pas ses logs</span></div>
+  <section class="scene" data-scene="1">
+    <h1>Un agent casse.<br>L'équipe squash.<br>La version fautive disparaît.</h1>
+    <p class="lead">Un agent itère jusqu'à ce que la CI passe, puis la PR est écrasée en un seul commit. L'itération qui a introduit la régression n'existe plus.</p>
+  </section>
+
+  <section class="scene" data-scene="2">
+    <h2>L'état du dépôt après l'erreur de l'agent</h2>
+    <pre class="term" data-role="diff"></pre>
+    <div class="split">
+      <div><h3>Le test, exécuté pour de vrai</h3><pre class="term bad" data-role="redtest"></pre></div>
+      <div><h3>L'historique restant</h3><pre class="term" data-role="commits"></pre><p class="note">Un seul commit : l'itération fautive n'a pas de commit.</p></div>
+    </div>
+  </section>
+
+  <section class="scene" data-scene="3">
+    <h2>La capture : un checkpoint par état</h2>
+    <pre class="term" data-role="chain"></pre>
+    <p class="note">Chaque checkpoint est un <strong>arbre git</strong> (état du dépôt), pas une ligne de log. La chaîne est chaînée : retoucher une entrée la rompt.</p>
+    <pre class="term ok" data-role="verify"></pre>
+  </section>
+
+  <section class="scene" data-scene="4">
+    <h2>Le rejeu : le prédicat est exécuté sur chaque état</h2>
+    <pre class="term" data-role="find"></pre>
+    <p class="note">Extraction dans un répertoire jetable, réseau coupé, dépôt de travail intact. L'index affiché vient de l'<strong>exécution réelle</strong> du prédicat.</p>
+  </section>
+
+  <section class="scene" data-scene="5">
+    <h2>La timeline</h2>
+    <ol class="timeline" data-role="timeline"></ol>
+    <p class="note">Checkpoint #0 : l'édition qui casse. Checkpoint #1 : la correction. L'index de la version fautive est <strong>#0</strong>.</p>
+  </section>
+
+  <section class="scene" data-scene="6">
+    <h2>Un hook qui refuse d'effacer la preuve</h2>
+    <pre class="term bad" data-role="hook"></pre>
+    <p class="note">Pendant une session capturée, <code>git commit --amend</code>, <code>git reset --hard</code> et <code>git checkout -- .</code> sont refusés : ils invalideraient un checkpoint déjà écrit.</p>
+  </section>
+
+  <section class="scene" data-scene="7">
+    <h2>Le rapport : imprimable, versionnable</h2>
+    <iframe src="report-agent.html" title="Rapport de rejeu de la session réelle"></iframe>
+  </section>
+
+  <section class="scene" data-scene="8">
+    <h2>Ce que ça donne, mesuré</h2>
+    <div class="stats" data-role="stats"></div>
+    <p class="note">Banc de 20 sessions : arbres git réels, prédicats réellement exécutés. Les chiffres viennent de <code>docs/MESURES.md</code>.</p>
+  </section>
+
+  <section class="scene" data-scene="9">
+    <h2>Ce que Rejeu ne fait pas</h2>
+    <ul class="limits">
+      <li>Il ne prouve pas que le modèle est reproductible.</li>
+      <li>Il ne remplace pas la revue de code.</li>
+      <li>Il ne capture que ce qui passe par le broker.</li>
+      <li>La capture est coopérative : l'agent appelle le checkpoint.</li>
+    </ul>
+    <p class="end">github.com/Tradoooo/rejeu · tradoooo.github.io/rejeu</p>
+  </section>
+</div>
+<script src="reel.js" type="module"></script>
+</body>
+</html>

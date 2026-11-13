@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Rejeu — session opencode-02 · Itération fautive localisée</title>
 <style>
-:root{--fg:#12161c;--bg:#fbfaf7;--muted:#5a6472;--line:#d9d5cc;--good:#1c6b3f;--bad:#9b1c1c;--warn:#7a4b00;--accent:#2b4b7a}
-@media (prefers-color-scheme:dark){:root{--fg:#eceae4;--bg:#12161c;--muted:#a8b0bb;--line:#2c3440;--good:#7fd1a3;--bad:#ff9b9b;--warn:#ffcf7a;--accent:#9dbbe6}}
+:root{--fg:#12161c;--bg:#fbfaf7;--muted:#5a6472;--line:#d9d5cc;--good:#1c6b3f;--bad:#9b1c1c;--bad-soft:#fbe9e9;--warn:#7a4b00;--accent:#2b4b7a}
+@media (prefers-color-scheme:dark){:root{--fg:#eceae4;--bg:#12161c;--muted:#a8b0bb;--line:#2c3440;--good:#7fd1a3;--bad:#ff9b9b;--bad-soft:#2a1518;--warn:#ffcf7a;--accent:#9dbbe6}}
 *{box-sizing:border-box}
 body{margin:0;padding:2rem;background:var(--bg);color:var(--fg);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:52rem;margin:0 auto}
@@ -20,9 +20,10 @@ code{font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}
 .verdict.warn{border-left-color:var(--warn)}
 .timeline{list-style:none;padding:0;margin:0}
 .timeline li{display:grid;grid-template-columns:3.2rem 9rem 8rem 1fr auto;gap:.5rem;align-items:baseline;padding:.45rem .25rem;border-bottom:1px solid var(--line)}
-.timeline li.faulty{background:color-mix(in srgb,var(--bad) 10%,transparent);outline:2px solid var(--bad);outline-offset:-2px}
+.timeline li.faulty{background:var(--bad-soft);outline:2px solid var(--bad);outline-offset:-2px}
 .idx{font-weight:700}
-.mark{white-space:nowrap}
+.mark{white-space:nowrap;display:inline-flex;align-items:center;gap:.3rem}
+.ico{display:inline-block;vertical-align:-2px}
 .mark.good{color:var(--good)}
 .mark.bad{color:var(--bad);font-weight:700}
 .mark.skip,.mark.warn{color:var(--warn)}
@@ -39,10 +40,10 @@ th,td{text-align:left;padding:.35rem .5rem;border-bottom:1px solid var(--line);v
 <body>
 <main>
   <h1>Rejeu — rapport de rejeu</h1>
-  <p class="muted">Session <code>opencode-02</code> · 2 checkpoints · généré le <time datetime="2026-11-13T14:01:02.056Z">2026-11-13T14:01:02.056Z</time></p>
+  <p class="muted">Session <code>opencode-02</code> · 2 checkpoints · généré le <time datetime="2026-11-13T15:38:09.239Z">2026-11-13T15:38:09.239Z</time></p>
 
   <section class="verdict bad" aria-labelledby="verdict-title">
-    <h2 id="verdict-title"><span aria-hidden="true">✕</span> Itération fautive localisée</h2>
+    <h2 id="verdict-title"><span aria-hidden="true"><svg class="ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span> Itération fautive localisée</h2>
     <p>Itération fautive #0 — premier checkpoint où le prédicat bascule.</p>
     <table>
       <tr><th scope="row">Itération fautive</th><td>#0</td></tr>
@@ -50,28 +51,28 @@ th,td{text-align:left;padding:.35rem .5rem;border-bottom:1px solid var(--line);v
       <tr><th scope="row">Prédécesseur</th><td>—</td></tr>
       <tr><th scope="row">Prédicat</th><td><code>node --test test/parser.test.js</code></td></tr>
       <tr><th scope="row">Checkpoints rejoués</th><td>2/2 · réseau hôte intact</td></tr>
-      <tr><th scope="row">Durée</th><td>3.2 s · mode lineaire</td></tr>
+      <tr><th scope="row">Durée</th><td>1.1 s · mode lineaire</td></tr>
     </table>
   </section>
 
   <h2>Timeline des checkpoints</h2>
   <ol class="timeline"><li class="faulty">
       <span class="idx">#0</span>
-      <span class="state"><span class="mark bad"><span aria-hidden="true">✕</span> échec</span> — première bascule</span>
+      <span class="state"><span class="mark bad"><svg class="ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> échec</span> — première bascule</span>
       <code class="tree">57b095fd0312</code>
       <span class="action">edit · edit:src/parser.js</span>
       <time datetime="2026-11-13T13:59:40.161Z">2026-11-13T13:59:40.161Z</time>
     </li>
 <li class="">
       <span class="idx">#1</span>
-      <span class="state"><span class="mark good"><span aria-hidden="true">✓</span> passe</span></span>
+      <span class="state"><span class="mark good"><svg class="ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M2.5 8.5l3.5 3.5 7-7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> passe</span></span>
       <code class="tree">9a812d13c576</code>
       <span class="action">edit · edit:test/parser.test.js</span>
       <time datetime="2026-11-13T13:59:59.549Z">2026-11-13T13:59:59.549Z</time>
     </li></ol>
 
   <h2>Chaîne d'attestation</h2>
-  <p class="good"><span aria-hidden="true">✓</span> Chaîne vérifiée 2/2</p><p class="muted">Empreinte de session <code>3b714026e6f0f9eab5d0267145dac88402b6f8c942c67b9d80cc6df71e04b8d6</code></p>
+  <p class="good"><svg class="ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M2.5 8.5l3.5 3.5 7-7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Chaîne vérifiée 2/2</p><p class="muted">Empreinte de session <code>3b714026e6f0f9eab5d0267145dac88402b6f8c942c67b9d80cc6df71e04b8d6</code></p>
 
   <h2>Limites</h2>
   <p class="muted">Rejeu localise la version fautive ; il ne dit pas si le correctif est bon. Un test non déterministe suspend le verdict au lieu de deviner. Seuls les appels passés par le broker sont capturés.</p>

@@ -17,13 +17,15 @@ VERDICT  Itération fautive #2 — premier checkpoint où le prédicat bascule. 
 TEMPS    1,1 s · hôte intact · CHAÎNE vérifiée 7/7
 ```
 
-## Vidéo (59 s)
+## Vidéo (69 s)
 
-▶ [`docs/demo/rejeu-demo.mp4`](docs/demo/rejeu-demo.mp4) — H.264 1280×720, sans
-narration. **Toutes les sorties affichées sont produites par de vraies
-exécutions** : `scripts/capture-reel.mjs` rejoue la session réelle de l'agent
-(état fautif extrait, test exécuté, hook invoqué, recherche relancée) et le
-reel n'affiche que ces sorties. La vidéo est aussi publiée avec le site :
+▶ [`docs/demo/rejeu-demo.mp4`](docs/demo/rejeu-demo.mp4) — H.264 1280×720, **sans
+audio** (ni musique, ni narration). Les 15 premières secondes montrent le
+problème **et** le chiffre. Découpage : [`docs/VIDEO.md`](docs/VIDEO.md).
+**Toutes les sorties affichées sont produites par de vraies exécutions** :
+`scripts/capture-reel.mjs` rejoue la session réelle de l'agent (état fautif
+extrait, test exécuté, hook invoqué, recherche relancée) et le reel n'affiche
+que ces sorties. La vidéo est aussi publiée avec le site :
 https://tradoooo.github.io/rejeu/demo/rejeu-demo.mp4
 
 ## Démonstration (hors ligne, 30 s)
@@ -33,6 +35,15 @@ https://tradoooo.github.io/rejeu/demo/rejeu-demo.mp4
 La page rejoue un résultat **réellement mesuré** (sept checkpoints, arbres git
 réels, prédicat exécuté pour de vrai) : elle n'exécute rien à l'écran, ne fait
 aucune requête réseau, et ne peut pas échouer devant un jury.
+
+## À qui ça sert
+
+**Anaïs, dev senior dans une équipe de six.** Chaque semaine, trois PR sont
+produites par un agent de code (CLI headless) sur deux dépôts. Elle reviews les
+diff, pas les étapes. Quand la CI casse après un `squash`, elle ne sait plus
+quelle version a cassé — et l'équipe perd du temps à le retrouver. C'est le
+problème que Rejeu adresse : **pas de commit fautif à retrouver, parce qu'il
+n'existe plus**.
 
 ## Une session réelle d'agent (pas une maquette)
 
@@ -51,7 +62,7 @@ l'agent reste à faire.
 
 ## Capture non coopérative (l'agent ne sait rien)
 
-Le mode coopératif suppose que l'agent appelle `rejeu_replay_checkpoint`. Le
+Le mode coopératif suppose que l'agent appelle `replay_checkpoint`. Le
 **proxy** supprime cette condition : il s'interpose entre l'agent et son
 serveur MCP d'outils, transmet les appels inchangés, et capture l'état du
 dépôt **à chaque changement**, sans que l'agent le sache.
@@ -109,15 +120,29 @@ Voir [`docs/MESURES.md`](docs/MESURES.md) — produites par
 
 - session réelle d'agent : **itération fautive localisée (#0) en 3,0 s**
 - **20/20** localisations correctes sur le banc de 20 sessions
-- **médiane 1,90 s** par session (min 0,74 s, max 3,30 s)
+- **médiane 1,90 s** par session (min 0,76 s, max 4,02 s)
 - **95/162** checkpoints rejoués (la dichotomie est utilisée quand le prédicat est monotone)
 - **20/20** chaînes vérifiées, **20/20** dépôts hôtes intacts
-- `axe` : **0 violation** sur les quatre pages ; un contrôle de contraste reste non concluant (`color-mix`)
+- `axe` : **0 violation et 0 contrôle non concluant** sur les quatre pages (le contraste des icônes est désormais mesuré : elles sont en SVG, l'information reste portée par le texte)
+- navigation clavier : **11 éléments focalisés, focus visible sur les 11** ; `prefers-reduced-motion` : transitions et animations à **0 s** — les deux mesurés par `scripts/a11y.mjs`
+- thème clair et sombre : captures dans [`docs/preuves/`](docs/preuves/)
 
 Ce qui est scripté dans le banc : l'injection du défaut et sa position. Ce qui
 est réel : les arbres git, les exécutions, les temps. La capture d'une session
 d'agent réelle et la vidéo ne sont **pas** faites — c'est écrit dans
 [`KIRO_JOURNAL.md`](KIRO_JOURNAL.md).
+
+## Accessibilité
+
+`scripts/a11y.mjs` (job CI `a11y`) mesure, sur les quatre pages publiées :
+
+- **axe** (WCAG 2.1 AA + bonnes pratiques) : **0 violation**, **0 contrôle non concluant** ;
+- **navigation clavier** : tabulation complète, focus visible (contour) sur chaque élément ;
+- **`prefers-reduced-motion`** : transitions et animations désactivées ;
+- **thème clair et sombre** : le rapport et la démo suivent `prefers-color-scheme`.
+
+L'information n'est jamais portée par la seule couleur : chaque état porte une
+icône **et** un texte (« passe », « échec »).
 
 ## Architecture
 

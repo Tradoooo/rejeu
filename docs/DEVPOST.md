@@ -2,7 +2,7 @@
 
 **Nom** : Rejeu (Agent Replay)
 **Catégorie** : Frankenstein — le magnétoscope ressuscité ; la bobine est l'historique de versions d'un agent.
-**Dépôt** : https://github.com/Tradoooo/rejeu · **Démo** : https://tradoooo.github.io/rejeu/
+**Dépôt** : https://github.com/Tradoooo/rejeu · **Démo** : https://tradoooo.github.io/rejeu/ · **Vidéo** : `docs/demo/rejeu-demo.mp4` (69 s, sans audio) · **Découpage** : `docs/VIDEO.md`
 
 ## Une phrase
 
@@ -30,6 +30,19 @@ Un agent itère, corrige son propre test rouge, puis l'équipe `squash` la PR «
 
 La propriété « deux captures du même état donnent le même arbre » a **échoué** : la capture écrivait `.replay/chain.json` dans l'arbre qu'elle capturait, donc chaque capture produisait un arbre différent. Détectée par `store.test.ts`, corrigée par `ALWAYS_IGNORED` (`.replay/`, `.git/`, `node_modules/`). Deuxième chemin du même défaut : un script écrivant `Date.now()` dans un fichier suivi — verrouillé par `version-property.test.ts`. Journal complet : `KIRO_JOURNAL.md`.
 
+## Les huit questions Kiro, y compris deux « non fait »
+
+| Question Kiro | Réponse |
+|---|---|
+| Les specs EARS sont-elles dans `.kiro/specs/` ? | Oui — `replay/requirements.md`, 20 exigences, chacune avec son vérificateur nommé. |
+| Une propriété fast-check a-t-elle échoué pour de vrai ? | Oui — la capture se capturait elle-même (`.replay/` dans l'arbre) : deux captures du même état donnaient deux arbres. Test rouge, correctif, journal. |
+| Un hook a-t-il bloqué quelque chose ? | Oui — `checkpoint-guard` refuse `commit --amend`, `reset --hard`, `checkout -- .` : prouvé par un script exécuté en CI (3 blocages sur 6 entrées). **Ce n'est pas un incident de production** : aucun `amend` n'a été tenté pendant la construction. |
+| Un agent personnalisé en lecture seule ? | **Non fait.** Le relecteur existe comme concept, pas comme agent Kiro livré ; rien dans le dépôt ne le prouve. |
+| Une comparaison chiffrée spec / vibe coding ? | **Non fait.** Aucune mesure de ce type n'a été produite ; la fiche V2 en annonçait une, elle n'est pas reprise. |
+| Un usage mesurable de MCP ? | Oui — deux brokers MCP (coopératif et non coopératif) et deux sessions d'agent réelles, avec les temps. |
+| Le steering a-t-il eu un effet avant/après ? | Oui — `determinism.md` (règle d'exclusion) est né d'un défaut mesuré ; l'effet est vérifiable par deux tests. |
+| Le chiffre est-il produit par l'outil ? | Oui — l'index de la version fautive sort d'une exécution réelle ; les temps viennent du banc rejouable. |
+
 ## Les chiffres, et leur commande
 
 | Chiffre | Valeur | Commande |
@@ -38,11 +51,14 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 | temps médian par session | 1,90 s | idem (`docs/MESURES.md`) |
 | checkpoints rejoués | 95/162 | idem |
 | chaînes vérifiées / hôtes intacts | 20/20 · 20/20 | idem |
-| violations axe | 0 | `node scripts/a11y.mjs` |
-| vidéo | 59 s, H.264, sorties réelles | `node scripts/capture-reel.mjs && node scripts/record-demo.mjs` |
+| violations axe | 0 (et 0 contrôle non concluant) | `node scripts/a11y.mjs` |
+| navigation clavier | 11 éléments focalisés, focus visible partout | `node scripts/a11y.mjs` |
+| `prefers-reduced-motion` | transitions et animations à 0 s | `node scripts/a11y.mjs` |
+| vidéo | 69 s, H.264, sans audio, sorties réelles | `node scripts/capture-reel.mjs && node scripts/record-demo.mjs` |
+| session squashée | recherche manuelle : **0 état retrouvé** ; rejeu : **#0 en 0,6 s** | `docs/MESURES.md` |
 | session réelle d'agent | fautive #0 localisée en 3,0 s | `fixtures/session-agent/` (opencode + broker) |
 | capture non coopérative | 3 appels d'agent → 2 checkpoints | `fixtures/session-proxy/` (proxy MCP) |
-| tests | 25 | `pnpm test:run` |
+| tests | 29 | `pnpm test:run` |
 
 ## Les limites, écrites
 

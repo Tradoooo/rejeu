@@ -27,11 +27,17 @@ async function load() {
   flaky = unstable;
 }
 
+const ICONS = {
+  good: '<svg class="ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M2.5 8.5l3.5 3.5 7-7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  bad: '<svg class="ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  warn: '<svg class="ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M8 2l6 11H2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+};
+
 function mark(ok, faulty) {
-  if (faulty) return '<span class="mark bad"><span aria-hidden="true">✕</span> échec — première bascule</span>';
+  if (faulty) return `<span class="mark bad">${ICONS.bad} échec — première bascule</span>`;
   return ok
-    ? '<span class="mark good"><span aria-hidden="true">✓</span> passe</span>'
-    : '<span class="mark bad"><span aria-hidden="true">✕</span> échec</span>';
+    ? `<span class="mark good">${ICONS.good} passe</span>`
+    : `<span class="mark bad">${ICONS.bad} échec</span>`;
 }
 
 function timeline(chain, verdict, limit) {
@@ -96,7 +102,7 @@ function renderErreur() {
 function renderSucces() {
   const verdict = data.verdict;
   zone.className = "card good";
-  zone.innerHTML = `<h3><span aria-hidden="true">✓</span> Itération fautive localisée</h3>
+  zone.innerHTML = `<h3>${ICONS.good} Itération fautive localisée</h3>
     <table>
       <tr><th scope="row">Itération fautive</th><td><strong>#${verdict.faultyIndex}</strong> (arbre <code>${esc(verdict.faultyTree?.slice(0, 10))}</code>)</td></tr>
       <tr><th scope="row">Prédécesseur</th><td>#${verdict.predecessorIndex}</td></tr>
@@ -126,5 +132,5 @@ load()
   .then(() => select("vide"))
   .catch(() => {
     zone.className = "card bad";
-    zone.innerHTML = '<h3><span aria-hidden="true">✕</span> Données de démonstration absentes</h3><p>La page a été ouverte hors du site publié : les fichiers <code>data/*.json</code> ne sont pas accessibles en <code>file://</code>. Le <a href="report.html">rapport imprimable</a> reste lisible.</p>';
+    zone.innerHTML = `<h3>${ICONS.bad} Données de démonstration absentes</h3><p>La page a été ouverte hors du site publié : les fichiers <code>data/*.json</code> ne sont pas accessibles en <code>file://</code>. Le <a href="report.html">rapport imprimable</a> reste lisible.</p>';
   });

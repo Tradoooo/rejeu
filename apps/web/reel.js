@@ -20,7 +20,10 @@ async function type(node, text, speed = 14) {
 function timeline(chain) {
   const rows = chain.map((entry, index) => {
     const faulty = index === 0;
-    return `<li class="${faulty ? "faulty" : ""}"><span class="idx">#${index}</span><span class="mark ${faulty ? "bad" : "good"}">${faulty ? "✕ échec — première bascule" : "✓ passe"}</span><span>${entry.action}</span></li>`;
+    const mark = faulty
+      ? '<span class="mark bad"><svg class="ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> échec — première bascule</span>'
+      : '<span class="mark good"><svg class="ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M2.5 8.5l3.5 3.5 7-7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> passe</span>';
+    return `<li class="${faulty ? "faulty" : ""}"><span class="idx">#${index}</span>${mark}<span>${entry.action}</span></li>`;
   });
   return rows.join("");
 }
@@ -70,7 +73,7 @@ async function show(index) {
   }
 }
 
-const DURATIONS = [5200, 9000, 7000, 7000, 5200, 6000, 7000, 5200, 7000, 5200];
+const DURATIONS = [8200, 9000, 7000, 7000, 5200, 6000, 7000, 5200, 7000, 5200];
 // Les durées sont exposées : l'enregistreur les lit dans la page (une seule
 // source de vérité pour le minutage du reel et pour l'enregistrement).
 window.REJUEL_DURATIONS = DURATIONS;

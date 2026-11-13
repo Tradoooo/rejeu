@@ -4,6 +4,7 @@
  * Les pages sont servies par un petit serveur local : `file://` casse fetch().
  */
 import { createServer } from "node:http";
+import { mkdir } from "node:fs/promises";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize, resolve } from "node:path";
 import { chromium } from "playwright";
@@ -52,8 +53,14 @@ for (const page of PAGES) {
   }
   const result = await new AxeBuilder({ page: tab }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"]).analyze();
   const violations = result.violations;
-  const contrast = result.incomplete.filter((item) => item.id === "color-contrast").length;
-  process.stdout.write(`${page} — ${violations.length} violation(s), ${result.passes.length} règles passées${contrast ? `, ${contrast} contraste(s) non concluant(s)` : ""}\n`);
+  const contrast = result.incomplete.filter((item) => item.id === "color-contrast");
+  const contrastCount = contrast.length;
+  process.stdout.write(`${page} — ${violations.length} violation(s), ${result.passes.length} règles passées${contrastCount ? `, ${contrastCount} contraste(s) non concluant(s)` : ""}\n`);
+  for (const item of contrast) {
+    for (const node of item.nodes) {
+      process.stdout.write(`  ? contraste non conclu : ${node.target.join(" ")} — ${node.failureSummary?.replace(/\n/g, " ").slice(0, 160)}\n`);
+    }
+  }
   for (const violation of violations) {
     process.stdout.write(`  ✕ ${violation.id} (${violation.impact}) × ${violation.nodes.length} : ${violation.help}\n`);
     for (const node of violation.nodes.slice(0, 3)) process.stdout.write(`     ${node.target.join(" ")}\n`);
@@ -62,6 +69,60 @@ for (const page of PAGES) {
   await context.close();
 }
 
+// ── Navigation clavier et mouvement réduit ──────────────────────────────
+// La grille exige une navigation clavier complète, un focus visible et le
+// respect de `prefers-reduced-motion`. Ces trois faits sont mesurés ici.
+const keyboard = await browser.newContext();
+const tab = await keyboard.newPage();
+await tab.goto(`http://127.0.0.1:${port}/`, { waitUntil: "load" });
+const focusTrail = [];
+for (let step = 0; step < 12; step += 1) {
+  await tab.keyboard.press("Tab");
+  const info = await tab.evaluate(() => {
+    const element = document.activeElement;
+    if (!element || element === document.body) return null;
+    const style = getComputedStyle(element);
+    return {
+      tag: element.tagName.toLowerCase(),
+      text: (element.textContent ?? "").trim().slice(0, 28),
+      outline: style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0,
+    };
+  });
+  if (info) focusTrail.push(info);
+}
+const withFocus = focusTrail.filter((item) => item.outline).length;
+const uniqueTargets = new Set(focusTrail.map((item) => `${item.tag}:${item.text}`)).size;
+process.stdout.write(`clavier — ${focusTrail.length} éléments focalisés, ${uniqueTargets} distincts, ${withFocus} avec focus visible\n`);
+if (focusTrail.length < 4 || withFocus !== focusTrail.length) {
+  process.stdout.write("✕ navigation clavier incomplète ou focus invisible\n");
+  failures += 1;
+}
+
+const reduced = await browser.newContext({ reducedMotion: "reduce" });
+const calm = await reduced.newPage();
+await calm.goto(`http://127.0.0.1:${port}/`, { waitUntil: "load" });
+const durations = await calm.evaluate(() => {
+  const element = document.querySelector(".bar > span") ?? document.body;
+  const style = getComputedStyle(element);
+  return { transition: style.transitionDuration, animation: style.animationDuration };
+});
+const still = durations.transition === "0s" && durations.animation === "0s";
+process.stdout.write(`prefers-reduced-motion — transition ${durations.transition}, animation ${durations.animation} → ${still ? "respecté" : "NON RESPECTÉ"}\n`);
+if (!still) failures += 1;
+
+// ── Preuves visuelles : thème clair et thème sombre ─────────────────────
+await mkdir(resolve("docs/preuves"), { recursive: true });
+for (const scheme of ["light", "dark"]) {
+  const context = await browser.newContext({ colorScheme: scheme, viewport: { width: 1280, height: 900 } });
+  const shot = await context.newPage();
+  await shot.goto(`http://127.0.0.1:${port}/report-agent.html`, { waitUntil: "load" });
+  await shot.screenshot({ path: resolve("docs/preuves", `rapport-${scheme}.png`), fullPage: false });
+  await context.close();
+}
+process.stdout.write("captures : docs/preuves/rapport-light.png, rapport-dark.png\n");
+
+await keyboard.close();
+await reduced.close();
 await browser.close();
 server.close();
 process.stdout.write(failures === 0 ? "axe : 0 violation\n" : `axe : ${failures} violation(s)\n`);

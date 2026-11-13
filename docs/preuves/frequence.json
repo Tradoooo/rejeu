@@ -1,0 +1,78 @@
+{
+  "measuredAt": "2026-11-13T18:24:11.190Z",
+  "organisation": "Tradoooo",
+  "sample": "PRs mergées, 100 plus récentes par dépôt",
+  "rows": [
+    {
+      "repo": "comptoir",
+      "merged": 100,
+      "squashed": 100,
+      "multiCommit": 59
+    },
+    {
+      "repo": "galons",
+      "merged": 93,
+      "squashed": 93,
+      "multiCommit": 13
+    },
+    {
+      "repo": "echeance",
+      "merged": 99,
+      "squashed": 99,
+      "multiCommit": 30
+    },
+    {
+      "repo": "sas",
+      "merged": 32,
+      "squashed": 32,
+      "multiCommit": 9
+    },
+    {
+      "repo": "creux",
+      "merged": 33,
+      "squashed": 33,
+      "multiCommit": 20
+    },
+    {
+      "repo": "vision",
+      "merged": 100,
+      "squashed": 100,
+      "multiCommit": 42
+    },
+    {
+      "repo": "testt",
+      "merged": 100,
+      "squashed": 99,
+      "multiCommit": 22
+    },
+    {
+      "repo": "duello_kotlin",
+      "merged": 16,
+      "squashed": 16,
+      "multiCommit": 3
+    },
+    {
+      "repo": "veille",
+      "merged": 24,
+      "squashed": 24,
+      "multiCommit": 5
+    },
+    {
+      "repo": "vigie",
+      "merged": 19,
+      "squashed": 19,
+      "multiCommit": 1
+    }
+  ],
+  "total": {
+    "merged": 616,
+    "squashed": 615,
+    "multiCommit": 204
+  },
+  "ratios": {
+    "squashedPercent": 99.8,
+    "multiCommitPercent": 33.1,
+    "erasedPercent": 33.1
+  },
+  "note": "« multiCommit » = la PR avait plusieurs commits avant la fusion : l'agent avait itéré. « squashed » = fusion à un seul commit : ces itérations ont été effacées de l'historique."
+}

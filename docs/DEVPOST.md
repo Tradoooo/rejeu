@@ -42,7 +42,7 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 | Un usage mesurable de MCP ? | Oui — deux brokers MCP (coopératif et non coopératif) et deux sessions d'agent réelles, avec les temps. |
 | Le steering a-t-il eu un effet avant/après ? | Oui — `determinism.md` (règle d'exclusion) est né d'un défaut mesuré ; l'effet est vérifiable par deux tests. |
 | Le chiffre est-il produit par l'outil ? | Oui — l'index de la version fautive sort d'une exécution réelle ; les temps viennent du banc rejouable. |
-| La perte subie est-elle chiffrée ? | **Pas encore.** Le protocole est écrit (`docs/PERTES.md`), il n'est pas exécuté : il faut des chronométrages humains. Le dépôt publie donc le coût de l'outil, pas une perte inventée. |
+| La perte subie est-elle chiffrée ? | **En partie, et sans invention.** L'étude à trois bras (`docs/PERTES-resultats.md`) mesure le coût de l'absence de capture (19 à 73 min d'archéologie git, ou l'échec : 1 sujet sur 5) sur des sujets **agents** ; la fréquence est comptée sur 616 PRs réelles (33,1 % avec des itérations effacées). Le chronométrage **humain** reste à faire — le protocole est écrit (`docs/PERTES.md`). |
 
 ## Les chiffres, et leur commande
 
@@ -57,6 +57,8 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 | `prefers-reduced-motion` | transitions et animations à 0 s | `node scripts/a11y.mjs` |
 | vidéo | 69 s, H.264, sans audio, sorties réelles | `node scripts/capture-reel.mjs && node scripts/record-demo.mjs` |
 | session squashée | recherche manuelle : **0 état retrouvé** ; rejeu : **#0 en 0,5–3,2 s** | `docs/MESURES.md` |
+| étude à 3 bras | sans capture : itération retrouvée **4/5** en **42 min** de médiane (archéologie `git fsck`) ; avec capture : **9/9** ; `rejeu find` seul : **~1 s** | `docs/PERTES-resultats.md` |
+| fréquence du problème | **616** PRs mergées analysées, **615** squashées (99,8 %), **204** avec des commits d'itération effacés (33,1 %) | `scripts/measure-frequency.mjs` |
 | démo en ligne | verdict affiché en **0,38 s** | `scripts/measure-claims.mjs` |
 | première valeur (dépôt vierge) | **0,77 s** | `scripts/measure-claims.mjs` |
 | steering avant/après | **6 faux écarts → 0** sur 7 captures | `scripts/measure-steering.mjs` |

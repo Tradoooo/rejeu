@@ -1,0 +1,88 @@
+{
+  "measuredAt": "2026-11-13T20:04:25.511Z",
+  "study": "/tmp/rejeu-study3",
+  "arms": {
+    "sans_capture": {
+      "n": 5,
+      "modification": 5,
+      "iteration": 4,
+      "full": 0,
+      "medianSeconds": 2560,
+      "minSeconds": 1161,
+      "maxSeconds": 4416,
+      "medianToolCalls": 19
+    }
+  },
+  "rows": [
+    {
+      "caseId": "cas-00",
+      "arm": "sans_capture",
+      "seconds": 1161,
+      "toolCalls": 16,
+      "signature": null,
+      "fileOk": true,
+      "tokenOk": false,
+      "tokenNote": "non noté : transcription caviardée par le harnais",
+      "iterationOk": true,
+      "correctModification": true,
+      "correctFull": false,
+      "answer": "FILE: src/parseur.js TOKEN: \",\" ITERATION: 1"
+    },
+    {
+      "caseId": "cas-02",
+      "arm": "sans_capture",
+      "seconds": 4416,
+      "toolCalls": 28,
+      "signature": null,
+      "fileOk": true,
+      "tokenOk": false,
+      "tokenNote": "non noté : transcription caviardée par le harnais",
+      "iterationOk": true,
+      "correctModification": true,
+      "correctFull": false,
+      "answer": "FILE: src/fenetre.js TOKEN: size + 1 ITERATION: 5"
+    },
+    {
+      "caseId": "cas-04",
+      "arm": "sans_capture",
+      "seconds": 2195,
+      "toolCalls": 18,
+      "signature": null,
+      "fileOk": true,
+      "tokenOk": false,
+      "tokenNote": "non noté : transcription caviardée par le harnais",
+      "iterationOk": true,
+      "correctModification": true,
+      "correctFull": false,
+      "answer": "FILE: src/journal.js TOKEN: \" ; \" ITERATION: 2"
+    },
+    {
+      "caseId": "cas-06",
+      "arm": "sans_capture",
+      "seconds": 2560,
+      "toolCalls": 19,
+      "signature": null,
+      "fileOk": true,
+      "tokenOk": false,
+      "tokenNote": "non noté : transcription caviardée par le harnais",
+      "iterationOk": false,
+      "correctModification": true,
+      "correctFull": false,
+      "answer": "FILE: src/somme.js TOKEN: reduce(..., 1) ITERATION: inconnue"
+    },
+    {
+      "caseId": "cas-08",
+      "arm": "sans_capture",
+      "seconds": 4416,
+      "toolCalls": 22,
+      "signature": null,
+      "fileOk": true,
+      "tokenOk": false,
+      "tokenNote": "non noté : transcription caviardée par le harnais",
+      "iterationOk": true,
+      "correctModification": true,
+      "correctFull": false,
+      "answer": "FILE: src/parseur.js TOKEN: value.split(\",,\") ITERATION: 3"
+    }
+  ]
+}

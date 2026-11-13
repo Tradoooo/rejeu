@@ -283,13 +283,44 @@ antérieure est une entrée datée, pas l'état actuel.
 | effet du steering | **6 faux écarts → 0** sur 7 captures | `docs/preuves/steering.json` |
 | concurrents comparés | **20**, sourcés | `docs/CONCURRENTS.md` |
 
+### 19:10 — la perte, enfin mesurée (étude à trois bras)
+
+Protocole écrit le jour même (`docs/PERTES.md`) : il fallait le **faire**, pas le
+décrire. Trois bras, 5 + 9 + 9 sujets, sur des dépôts réels (8 modules, diff de
+PR ~190 lignes, une seule modification fautive, PR squashée).
+
+| | sans capture | manuel | rejeu |
+|---|---|---|---|
+| itération correcte | 4/5 | 9/9 | 9/9 |
+| temps médian | 42 min 40 s | 5 min 44 s | 7 min 59 s |
+
+Ce que l'étude dit, sans arrangeant : **sans capture, l'information survit**
+(les objets git orphelins sont exhumables par `git fsck`) **mais elle coûte
+19 à 73 minutes**, et un sujet sur 5 n'a pas su. **Avec la capture, 9 sujets
+sur 9** trouvent l'itération. Et **notre outil n'est pas plus rapide qu'un
+agent qui refait la boucle à la main** (7 min 59 s contre 5 min 44 s) : avec
+l'outil, les sujets *vérifient* le verdict en rejouant les arbres eux-mêmes.
+L'outil donne la même réponse en 1 commande et ~1 s : il supprime le travail,
+pas la latence.
+
+Deux défauts de l'étude, déclarés : un cas sur dix était **invalide** (la
+variante fautive n'était pas détectée par son test → exclu des chiffres, et
+c'est une vraie limite : sans prédicat qui détecte la faute, rien n'est
+localisable — l'outil le dit) ; et le **pilote** fuyait (le fichier portait
+« itération N » en commentaire) → corrigé, le pilote n'est pas publié.
+
+La fréquence, elle, est comptée sur les dépôts réels : **616 PRs mergées**,
+**615** squashées (99,8 %), **204** avec des commits d'itération effacés
+(33,1 %).
+
 ## Ce qui n'est pas encore fait
 
 - La capture sans coopération passe par un serveur MCP **enveloppé** : un agent
   qui n'utilise aucun serveur MCP n'est pas capturé.
-- La **perte subie** par les équipes n'est pas chiffrée : le protocole est
-  écrit (`docs/PERTES.md`), il n'est pas exécuté (il faut des chronométrages
-  humains).
+- La **perte subie par des humains** n'est pas encore chronométrée : l'étude
+  à trois bras (`docs/PERTES-resultats.md`) mesure le coût sur des sujets
+  **agents** et la fréquence sur des dépôts réels ; le protocole humain
+  (`docs/PERTES.md`) reste à exécuter avec de vraies équipes.
 - La comparaison spec / vibe coding porte sur **une fonction, un modèle, une
   fois** ; durée et itérations sont déclaratives.
 - La vidéo montre les **sorties réelles rejouées** par l'outil, pas l'agent

@@ -132,10 +132,39 @@ Voir [`docs/MESURES.md`](docs/MESURES.md) — produites par
 - navigation clavier : **11 éléments focalisés, focus visible sur les 11** ; `prefers-reduced-motion` : transitions et animations à **0 s** — les deux mesurés par `scripts/a11y.mjs`
 - thème clair et sombre : captures dans [`docs/preuves/`](docs/preuves/)
 
-Ce qui est scripté dans le banc : l'injection du défaut et sa position. Ce qui
-est réel : les arbres git, les exécutions, les temps. La capture d'une session
-d'agent réelle et la vidéo ne sont **pas** faites — c'est écrit dans
-[`KIRO_JOURNAL.md`](KIRO_JOURNAL.md).
+## La perte, mesurée à trois bras
+
+Une PR squashée : l'historique d'itération disparaît, un test échoue. Des
+sujets (agents, même modèle) doivent dire **quelle modification a cassé le test
+et à quelle itération**. Trois bras, sur des dépôts réels à 8 modules et un diff
+de ~190 lignes :
+
+| | sans capture | manuel (chaîne + boucle écrite à la main) | rejeu |
+|---|---|---|---|
+| **itération correcte** | **4/5** | **9/9** | **9/9** |
+| temps médian | **42 min 40 s** | **5 min 44 s** | 7 min 59 s |
+| temps min / max | 19 min / 73 min | 2 min 54 s / 10 min 21 s | 5 min 14 s / 9 min 26 s |
+
+Trois lectures, dont une qui nous coûte :
+
+1. **Sans capture, l'information survit mais devient coûteuse** : 4 sujets sur 5
+   l'ont exhumée via `git fsck` (les objets orphelins survivent à la
+   suppression des refs) — en 19 à 73 minutes. Un sujet a répondu « inconnue ».
+2. **La capture est ce qui rend l'itération trouvable** : chaîne présente →
+   9/9, en 5 min 44 s.
+3. **Notre outil n'est pas plus rapide qu'un agent qui refait la boucle**
+   (7 min 59 s contre 5 min 44 s) : avec l'outil, les sujets *vérifient* le
+   verdict en rejouant les arbres à la main. L'outil donne la même réponse en
+   **1 commande et ~1 s** ; chez un agent, le temps est dominé par la latence
+   du modèle. **L'outil supprime le travail, pas la latence.**
+
+Et la fréquence, comptée sur les dépôts réels de l'organisation
+(`scripts/measure-frequency.mjs`) : **616 PRs mergées**, dont **615 (99,8 %)
+fusionnées à un seul commit** et **204 (33,1 %)** qui avaient plusieurs commits
+avant fusion — donc une histoire d'itération effacée.
+
+Détail, méthode et limites (sujets = agents, un cas invalide exclu, pilote
+fuyant) : [`docs/PERTES-resultats.md`](docs/PERTES-resultats.md).
 
 ## Accessibilité
 

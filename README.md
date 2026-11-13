@@ -25,6 +25,21 @@ La page rejoue un résultat **réellement mesuré** (sept checkpoints, arbres gi
 réels, prédicat exécuté pour de vrai) : elle n'exécute rien à l'écran, ne fait
 aucune requête réseau, et ne peut pas échouer devant un jury.
 
+## Une session réelle d'agent (pas une maquette)
+
+Le 13 novembre 2026, `opencode` 2.1.1 (modèle `inferhub/ag/claude-sonnet-4-6`)
+a reçu la tâche « renomme `parse` en `parseList` dans `src/parser.js`, sans
+toucher au test ». Il a renommé → **checkpoint 0**, les tests ont cassé, il a
+corrigé le test → **checkpoint 1**. `first_faulty` a répondu
+**itération fautive #0** en **3,0 s**, dépôt hôte intact, chaîne vérifiée 2/2.
+
+- rapport de la session : [`report-agent.html`](https://tradoooo.github.io/rejeu/report-agent.html)
+- chaîne brute : [`fixtures/session-agent/chain.json`](fixtures/session-agent/chain.json)
+
+Limite : la capture est **coopérative** (l'agent appelle `replay_checkpoint`
+parce que le prompt le lui demande). Un proxy qui interpose les outils de
+l'agent reste à faire.
+
 ## En 60 secondes sur votre dépôt
 
 ```bash
@@ -63,11 +78,12 @@ JSON-RPC sur stdio, zéro dépendance). L'agent n'est ni patché ni tracé.
 Voir [`docs/MESURES.md`](docs/MESURES.md) — produites par
 `node corpus/generate.mjs && node corpus/measure.mjs` :
 
+- session réelle d'agent : **itération fautive localisée (#0) en 3,0 s**
 - **20/20** localisations correctes sur le banc de 20 sessions
 - **médiane 1,90 s** par session (min 0,74 s, max 3,30 s)
 - **95/162** checkpoints rejoués (la dichotomie est utilisée quand le prédicat est monotone)
 - **20/20** chaînes vérifiées, **20/20** dépôts hôtes intacts
-- `axe` : **0 violation** sur les trois pages ; un contrôle de contraste reste non concluant (`color-mix`)
+- `axe` : **0 violation** sur les quatre pages ; un contrôle de contraste reste non concluant (`color-mix`)
 
 Ce qui est scripté dans le banc : l'injection du défaut et sa position. Ce qui
 est réel : les arbres git, les exécutions, les temps. La capture d'une session

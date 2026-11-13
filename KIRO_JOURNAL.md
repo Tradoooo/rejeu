@@ -113,13 +113,36 @@ réussir là où l'usage réel est refusé. `sandbox.ts` relance alors **sans**
 coupure réseau et rend `networkCut: false` — dégradation annoncée, jamais
 silencieuse.
 
+### 15:12 — première session RÉELLE d'un agent, capturée par le broker
+
+`opencode` 2.1.1, modèle `inferhub/ag/claude-sonnet-4-6`, broker MCP `rejeu`
+déclaré par `opencode mcp add` (fichier projet). Tâche donnée à l'agent :
+renommer `parse` en `parseList` dans `src/parser.js` **sans toucher au fichier
+de test**, appeler `replay_checkpoint` après chaque édition, puis
+`first_faulty`.
+
+Ce qui s'est passé, dans l'ordre, sans intervention :
+
+1. l'agent renomme la fonction → **checkpoint 0** (`57b095fd…`) ;
+2. `node --test` échoue (le test importe `parse`) ;
+3. l'agent corrige le test → **checkpoint 1** (`9a812d13…`) ;
+4. `first_faulty` répond : **itération fautive #0**, en **3,0 s**, dépôt hôte
+   intact, chaîne vérifiée 2/2.
+
+C'est la démonstration que la fiche ne pouvait pas fournir : la régression est
+introduite par un vrai agent, puis localisée par rejeu. Artefacts :
+`fixtures/session-agent/chain.json` et `report.html` publié sur le site
+(`report-agent.html`).
+
+Limite, écrite : la capture est **coopérative** — l'agent appelle
+`replay_checkpoint` parce que le prompt le lui demande. Un vrai proxy d'outils
+(qui capture sans coopération) reste à faire.
+
 ## Ce qui n'est pas encore fait
 
-- **Capture d'une session d'agent réelle** (CLI headless + broker MCP) : le
-  broker expose les trois outils et le format est testé manuellement, mais la
-  session réelle n'a pas été capturée. Tant que ce n'est pas fait, les 20
-  sessions du banc sont des sessions **scriptées** (arbres et exécutions
-  réels).
+- **Capture sans coopération** : la session réelle ci-dessus fonctionne, mais
+  c'est l'agent qui appelle le checkpoint. Un proxy qui interpose les outils de
+  l'agent (pour capturer sans le lui demander) n'est pas fait.
 - **Vidéo** : aucun plan tourné.
 - **Comparaison spec / vibe coding** : non mesurée. La fiche V2 annonçait
   « 3 h 20 / 14 allers-retours / 3 défauts contre 1 h 05 / 27 allers-retours

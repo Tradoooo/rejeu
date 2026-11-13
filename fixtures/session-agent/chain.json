@@ -1,0 +1,27 @@
+{
+  "session": "opencode-02",
+  "repo": "/tmp/rejeu-real",
+  "createdAt": "2026-11-13T13:59:40.161Z",
+  "entries": [
+    {
+      "index": 0,
+      "tree": "57b095fd03124f27a68b779af236d86b26cbee5e",
+      "parentTree": null,
+      "tool": "edit",
+      "action": "edit:src/parser.js",
+      "at": "2026-11-13T13:59:40.161Z",
+      "outside": {},
+      "digest": "a430207fa19b3c3113d5b4eb8d5deaad95a19aff6f47d0c75cc8376861ad00c5"
+    },
+    {
+      "index": 1,
+      "tree": "9a812d13c576dd870acbd53cc860c37ac181d591",
+      "parentTree": "57b095fd03124f27a68b779af236d86b26cbee5e",
+      "tool": "edit",
+      "action": "edit:test/parser.test.js",
+      "at": "2026-11-13T13:59:59.549Z",
+      "outside": {},
+      "digest": "bf67b273a6d88abcece7ae63f4ef5a109d3351ef79689eb295763d96db6632e1"
+    }
+  ]
+}

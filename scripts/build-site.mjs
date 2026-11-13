@@ -3,7 +3,7 @@
  * rendus depuis les exécutions enregistrées, et les données de la démo.
  * Aucune ressource externe : la page doit s'ouvrir hors ligne.
  */
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { renderReport, verifyChain } from "../packages/core/src/index.ts";
 
@@ -36,5 +36,13 @@ writeFileSync(
   `${JSON.stringify({ verdict, chain, diff, predicate, verification: verifyChain(chain), sessionDigest }, null, 2)}\n`,
 );
 copyFileSync(join(root, "fixtures", "demo", "flaky.json"), join(out, "data", "flaky.json"));
+
+// Session réelle d'un agent (opencode + broker MCP), capturée le 13 nov. 2026 :
+// le rapport est publié tel quel, et la chaîne brute est consultable.
+const agentDir = join(root, "fixtures", "session-agent");
+if (existsSync(join(agentDir, "report.html"))) {
+  copyFileSync(join(agentDir, "report.html"), join(out, "report-agent.html"));
+  copyFileSync(join(agentDir, "chain.json"), join(out, "data", "session-agent.json"));
+}
 writeFileSync(join(out, ".nojekyll"), "");
 process.stdout.write(`site construit : ${out} (report.html, report-flaky.html, données de démo)\n`);

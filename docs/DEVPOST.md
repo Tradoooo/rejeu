@@ -39,6 +39,7 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 | checkpoints rejoués | 95/162 | idem |
 | chaînes vérifiées / hôtes intacts | 20/20 · 20/20 | idem |
 | violations axe | 0 | `node scripts/a11y.mjs` |
+| session réelle d'agent | fautive #0 localisée en 3,0 s | `fixtures/session-agent/` (opencode + broker) |
 | tests | 25 | `pnpm test:run` |
 
 ## Les limites, écrites
@@ -47,4 +48,5 @@ La propriété « deux captures du même état donnent le même arbre » a **éc
 - Seuls les appels passés par le broker sont capturés.
 - Linux uniquement pour la coupure réseau ; macOS/Windows hors périmètre v0.1.
 - La chaîne prouve l'intégrité du journal, pas l'honnêteté de l'agent.
-- **Non fait à ce jour** : la capture d'une session d'agent réelle et la vidéo.
+- La capture est **coopérative** (l'agent appelle le checkpoint) ; le proxy d'outils transparent reste à faire.
+- **Non fait à ce jour** : la vidéo.

@@ -235,6 +235,24 @@ objective : **la même** suite de 14 cas contre les deux implémentations.
 Les deux finissent correctes ; la différence est dans le coût. Limites (une
 fonction, un modèle, une fois ; itérations déclaratives) : `RESULTATS.md`.
 
+### 17:05 — un défaut trouvé par la comparaison des concurrents, puis corrigé
+
+La revue des concurrents (20 outils, sources citées) a fait tomber une limite
+que nous ne soupçonnions pas : **nos arbres de checkpoint vivaient dans la base
+d'objets sans ref** ; `git gc --prune=now` les effaçait. La session d'agent
+capturée devenait alors **irrejouable**.
+
+Correctif : chaque capture crée une ref `refs/rejeu/<session>/<index>`
+(`protectTree` dans `store.ts`), donc l'arbre reste atteignable. Vérifié pour de
+vrai : capture → `git gc --prune=now` → `git cat-file -t <arbre>` répond
+`t`et `rejeu verify` répond « chaîne vérifiée ». Test ajouté (39 tests).
+
+Le même travail a faitmoving deux affirmations de notre communication, qu'on
+corrige plutôt que de les défendre : `git bisect run` exécute bien un prédicat
+et rend bien l'index du commit fautif (notre différence est l'indexation
+d'états **non commités**), et les checkpoints d'agents (Cline, Roo Code, opencode)
+sont plus proches de nous que nous ne l'affirmions et survivent au squash.
+
 ## Ce qui n'est pas encore fait
 
 - La capture sans coopération passe par un serveur MCP **enveloppé** : un agent

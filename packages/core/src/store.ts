@@ -75,6 +75,16 @@ export interface CaptureOptions {
   outside?: Record<string, string>;
 }
 
+/**
+ * Protège un arbre de la suppression : sans référence, `git gc --prune=now`
+ * effacerait les objets des checkpoints (ils sont non atteignables).
+ * Une ref par checkpoint : `refs/rejeu/<session>/<index>`.
+ */
+function protectTree(repo: string, session: string, index: number, tree: string): void {
+  const ref = `refs/rejeu/${session}/${index}`;
+  git(repo, ["update-ref", ref, tree]);
+}
+
 /** Calcule l'arbre courant sans rien écrire (index temporaire). */
 function currentTree(repo: string): string {
   const tempIndex = join(tmpdir(), `rejeu-index-${randomUUID()}`);
@@ -98,6 +108,7 @@ export function captureCheckpoint(options: CaptureOptions): Checkpoint {
   const chain = loadChain(options.repo, options.session);
   const previous = chain?.entries.at(-1) ?? null;
   const tree = currentTree(options.repo);
+  protectTree(options.repo, options.session, previous ? previous.index + 1 : 0, tree);
   const entry = makeEntry(previous, {
     tree,
     parentTree: previous ? previous.tree : null,

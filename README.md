@@ -170,6 +170,28 @@ phrase. La **même** suite de 14 cas est ensuite exécutée contre les deux.
 Les deux finissent correctes ; la différence est dans le **coût** (0 correction
 contre 1, 75 lignes contre 128). Détail et limites : [`experiments/spec-vibe/RESULTATS.md`](experiments/spec-vibe/RESULTATS.md).
 
+## Les concurrents, honnêtement
+
+[`docs/CONCURRENTS.md`](docs/CONCURRENTS.md) compare **20 concurrents** vérifiés
+sur leur documentation et leur code source : Claude Code (checkpoints, `/rewind`),
+Cursor, opencode (snapshots), Codex CLI, Aider, Cline, Roo Code, Continue,
+Windsurf, `git reflog`, `git stash`, `git bisect`, `rr`, replay.io, VCR.py,
+Polly, LangSmith, Langfuse, OpenTelemetry GenAI.
+
+Trois conclusions qui nous coûtent des points, mais qu'on préfère écrire :
+
+1. **`git bisect run` exécute un prédicat et rend l'index du commit fautif.**
+   Notre différence n'est pas l'algorithme : c'est que nous indexons des **états
+   non commités**, là où bisect n'a plus de commits après un squash.
+2. **Les checkpoints d'agents sont plus proches de nous que nous ne l'affirmions.**
+   Cline et Roo Code utilisent un dépôt git ombré, opencode une base d'objets
+   séparée — et ils **survivent au squash**. Ce qui nous reste : l'exécution du
+   prédicat sur chaque état, l'index de version fautive, la chaîne d'attestation.
+3. **Une limite de notre stockage, trouvée et corrigée pendant ce travail** :
+   nos arbres vivaient sans ref et `git gc --prune=now` les effaçait. Chaque
+   checkpoint crée désormais `refs/rejeu/<session>/<index>` ; vérifié après un
+   `gc --prune=now` réel.
+
 ## Architecture
 
 ```

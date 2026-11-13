@@ -86,3 +86,18 @@ describe("store de checkpoints", () => {
     expect(chain?.entries.length).toBe(2);
   });
 });
+
+describe("les objets capturés sont protégés du gc", () => {
+  it("crée une ref par checkpoint, pour que git gc ne les supprime pas", () => {
+    const dir = repo();
+    writeProject(dir, { parse: GOOD_PARSER, test: PARSER_TEST });
+    commit(dir, "état");
+    const entry = captureCheckpoint({ repo: dir, session: "protège", tool: "edit", action: "edit" });
+
+    const refs = run(dir, ["git", "for-each-ref", "--format=%(refname) %(objectname)", "refs/rejeu"]).split("\n");
+    expect(refs).toContain(`refs/rejeu/protège/0 ${entry.tree}`);
+    // Sans cette ref, l'arbre serait non atteignable et `git gc --prune=now` l'effacerait.
+    const reachable = run(dir, ["git", "rev-list", "--objects", "--all"]).includes(entry.tree);
+    expect(reachable).toBe(true);
+  });
+});
